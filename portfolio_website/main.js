@@ -17,10 +17,10 @@
   HTML CSS, 
   bash
 
-  Projects randomly floating and spinning
-  Websites | Flask, Vue, TypeScript, JavaScript, HTML, CSS, Socket.io Jun 17, 2021
-  Real Time Object Detection For Robotic Actuation | Python           Mar 8, 2022
-  Embedded Systems External Device Drivers | C, C++             Jun 8, 2022
+  Projects randomly floating and spinning:
+  Websites | Flask, Vue, tailwind, TypeScript, JavaScript, HTML, CSS, Socket.io 
+  Real Time Object Detection For Robotic Actuation | Python           
+  Embedded Systems External Device Drivers | C, C++             
   Auto grader
   Robomasters Game
   Boids: bird flock simulation
@@ -105,81 +105,56 @@ rosie.position.set(20, 0, 0)
 scene.add(rosie)
 
 //==================== languages ==================== 
+const java = new THREE.TextureLoader().load('../assets/Java-Logo.png')
+java.repeat.set(0.5,1)
+java.offset.set(0.255,0)
+const html_css = new THREE.TextureLoader().load('../assets/html_css.png')
+html_css.repeat.set(1,1.1)
+html_css.offset.set(0,-0.08)
 const cube = new THREE.Mesh(
   new THREE.BoxGeometry(10, 10, 10),
-  [new THREE.MeshBasicMaterial({
-    map: new THREE.TextureLoader().load('../assets/Java-Logo.png'), // strech
+  [new THREE.MeshLambertMaterial({
+    map: java,
     transparent: true,
   }),
-  new THREE.MeshBasicMaterial({
-    map: new THREE.TextureLoader().load('../assets/bash.png'),
-    transparent: true,
-  }),
-  new THREE.MeshBasicMaterial({
+  new THREE.MeshLambertMaterial({
     map: new THREE.TextureLoader().load('../assets/c_cpp.png'),
     transparent: true,
   }),
-  new THREE.MeshBasicMaterial({
-    map: new THREE.TextureLoader().load('../assets/html_css.jpg'),
+  new THREE.MeshLambertMaterial({
+    map: html_css,
     transparent: true,
   }),
-  new THREE.MeshBasicMaterial({
+  new THREE.MeshLambertMaterial({
     map: new THREE.TextureLoader().load('../assets/JS_TS.png'),
     transparent: true,
   }),
-  new THREE.MeshBasicMaterial({
-    map: new THREE.TextureLoader().load('../assets/rosie.png'),
+  new THREE.MeshLambertMaterial({
+    map: new THREE.TextureLoader().load('../assets/bash.png'),
     transparent: true,
   })]
 )
 cube.position.set(35, 0, 0)
 scene.add(cube)
 
-
-
-// scene.background = new THREE.TextureLoader().load('../assets/space.jpg')// loads img
-
 function lerp(a, b, t) { return a + (b - a) * t }
 function ease(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
-/*
 const loader = new GLTFLoader()
 
+let py_logo = null
 loader.load(
   '../assets/python.glb',
-  function (gltf) {
-    // gltf.scene.scale.set(50, 50, 50)
-    // gltf.scene.rotation.x += 0.01
-    // python = gltf.scene
-    // gltf.scene.traverse(function (child) {
-    //     if ((child as THREE.Mesh).isMesh) {
-    //         const m = (child as THREE.Mesh)
-    //         m.receiveShadow = true
-    //         m.castShadow = true
-    //     }
-    //     if (((child as THREE.Light)).isLight) {
-    //         const l = (child as THREE.Light)
-    //         l.castShadow = true
-    //         l.shadow.bias = -.003
-    //         l.shadow.mapSize.width = 2048
-    //         l.shadow.mapSize.height = 2048
-    //     }
-    // })
-    scene.add(gltf.scene)
-  },
-  (xhr) => { console.log((xhr.loaded / xhr.total) * 100 + '% loaded') },
-  (error) => { console.log(error) }
-)
-*/
-const loader = new GLTFLoader();
-
-loader.load(
-  '../assets/python.glb',
-  function (gltf) {
-    scene.add(gltf.scene);
+  gltf => {
+    gltf.scene.scale.set(50, 50, 50)
+    py_logo = gltf.scene
+    cube.add(gltf.scene)
+    py_logo.position.set(5,-6.5,8)
+    py_logo.rotation.y -= 1.55
+    py_logo.rotation.z -= 0.13
   },
   xhr => { console.log((xhr.loaded / xhr.total) * 100 + '% loaded') },
-  error => { console.error(error); }
-);
+  error => { console.log(error) }
+)
 
 //m stands for max hight
 let points = [
@@ -242,6 +217,10 @@ function animate() {
 
   logo.rotation.x += 0.01
   logo.rotation.y += 0.01
+
+  // cube.rotateX(0.01)
+  // cube.rotateY(0.01)
+  // cube.rotateZ(0.01)
 
   rosie.rotation.y += 0.01
 
