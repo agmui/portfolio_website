@@ -9,10 +9,16 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.16",
+    "@types/node": "^20.3.2",
     "typescript": "^5.0.2",
     "vite": "^4.3.9"
   },
   "dependencies": {
+    "fast-csv": "^4.3.6",
+    "jquery": "^3.7.0",
+    "jquery-csv": "^1.0.21",
+    "simplex-noise": "^4.0.1",
     "three": "^0.153.0"
   }
 }
