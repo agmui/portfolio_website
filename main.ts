@@ -122,7 +122,7 @@ function display_text(text: string, x: int, y: int, z: int) {
 }
 
 let data = null
-// Fetch the CSV file
+// Fetch the json file
 fetch('./output.json')
   .then((response) => response.json())
   .then((json) => {
@@ -132,7 +132,6 @@ fetch('./output.json')
 
 
 
-// console.log('csv_data :>> ', csv_data);
 
 function update_wave(frame: int, step) {
   if (data == null)
@@ -153,12 +152,23 @@ function update_wave(frame: int, step) {
   positionAttribute.needsUpdate = true;
 }
 
-// mesh.geometry.vertices.forEach((v, i) => {
-//     v.setZ(heightArray[i]);
-// });
-// mesh.geometry.verticesNeedUpdate = true;
-// mesh.geometry.computeFaceNormals(); 
 
+//========================adding sun=============================
+function sun() {
+  const geometry = new THREE.CircleGeometry(10, 32);
+  const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+  const circle = new THREE.Mesh(geometry, material); scene.add(circle);
+  scene.add(circle)
+
+  for (let i = 0; i < 5; i++) {
+    const bar_geometry = new THREE.PlaneGeometry(20, 1, 1, 1);
+    const bar_material = new THREE.MeshBasicMaterial({ color: 0x0fff00, side: THREE.DoubleSide });
+    const bars = new THREE.Mesh(bar_geometry, bar_material);
+    bars.position.y -= 4*Math.sqrt(i)
+    scene.add(bars);
+  }
+}
+sun()
 
 //============================== ascii ============================== 
 scene.background = new THREE.Color(0, 0, 0);
