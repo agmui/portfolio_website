@@ -1,3 +1,11 @@
+import './style.css'
+import * as THREE from 'three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
+import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
+import { Color } from 'three/src/math/Color.js';
+import { BufferGeometry } from 'three/src/core/BufferGeometry.js';
 /*
   Top page:
   name, contacts, fancy animation
@@ -30,13 +38,22 @@
   Digital Electronics: Arduino projects and soldering
 
 */
-import './style.css'
-import * as THREE from 'three'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
-import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 
+const hexToRgb = (hex, forShaders = false) => {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (forShaders) {
+    return result ? {
+      r: parseInt(result[1], 16) / 255,
+      g: parseInt(result[2], 16) / 255,
+      b: parseInt(result[3], 16) / 255
+    } : null;
+  }
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
 //==================== setup ==================== 
 // setup needs 3 things: scene, cam, renderer
 // init scene
@@ -55,8 +72,8 @@ renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
 
 
 // const lightHelper = new THREE.PointLightHelper(pointLight) // gives wireframe to light
-const gridHelper = new THREE.GridHelper(200, 50) // adds grid to sceen
-scene.add(gridHelper)
+// const gridHelper = new THREE.GridHelper(200, 50) // adds grid to sceen
+// scene.add(gridHelper)
 
 const controls = new OrbitControls(camera, renderer.domElement)
 
@@ -70,12 +87,12 @@ function wireframe(name: string, size, shapex, shapez) {
   );
   // Material
   const wireframeMaterial = new THREE.MeshBasicMaterial({
-    color: 0x1a7aad,
+    color: 0x19F2F7,
     wireframe: true,
     transparent: true,
     depthWrite: false,
     // side: THREE.DoubleSide,
-    blending: THREE.AdditiveBlending
+    // blending: THREE.AdditiveBlending
   });
 
   // Mesh
@@ -154,32 +171,205 @@ function update_wave(frame: int, step) {
 
 
 //========================adding sun=============================
-function sun() {
-  const geometry = new THREE.CircleGeometry(10, 32);
-  const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-  const circle = new THREE.Mesh(geometry, material); scene.add(circle);
-  scene.add(circle)
 
-  for (let i = 0; i < 5; i++) {
-    const bar_geometry = new THREE.PlaneGeometry(20, 1, 1, 1);
-    const bar_material = new THREE.MeshBasicMaterial({ color: 0x0fff00, side: THREE.DoubleSide });
-    const bars = new THREE.Mesh(bar_geometry, bar_material);
-    bars.position.y -= 4*Math.sqrt(i)
-    scene.add(bars);
+// vertexShader for the Sun
+function vertexShader() {
+  return `
+      varying vec2 vUv;
+      varying vec3 vPos;
+      void main() {
+        vUv = uv;
+        vPos = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); 
+      }
+  `
+}
+
+// fragmentShader for the Sun
+function fragmentShader() {
+  return `
+      #ifdef GL_ES
+      precision mediump float;
+      #endif
+      #define PI 3.14159265359
+      #define TWO_PI 6.28318530718
+      
+      uniform vec2 u_resolution;
+      uniform vec2 u_mouse;
+      uniform float u_time;
+      uniform vec3 color_main;
+      uniform vec3 color_accent;
+      varying vec2 vUv;
+      varying vec3 vPos;
+      void main() {
+        vec2 st = gl_FragCoord.xy/u_resolution.xy;
+        float x = vPos.y;
+        float osc = ceil(sin((3. - (x - u_time) / 3.5) * 5.) / 2. + 0.4 - floor((3. - x / 2.5) * 5. / TWO_PI) / 10.);
+        vec3 color = mix(color_accent, color_main, smoothstep(0.2, 1., vUv.y));
+        gl_FragColor = vec4(color, osc);
+      }
+  `
+}
+
+const uniforms = {
+  // ...getDefaultUniforms(),
+  color_main: { // sun's top color
+    value: hexToRgb("#fc36c9", true)
+  },
+  color_accent: { // sun's bottom color
+    value: hexToRgb("#923dea", true)
   }
 }
-sun()
 
+const sunGeom = new THREE.SphereGeometry(60, 64, 64)
+const sunMat = new THREE.ShaderMaterial({
+  uniforms: uniforms,
+  vertexShader: vertexShader(),
+  fragmentShader: fragmentShader(),
+  transparent: true
+})
+const sun = new THREE.Mesh(sunGeom, sunMat)
+sun.position.set(0, 20, -250)
+scene.add(sun)
+
+//====================  landscape ==================== 
+const geo = new THREE.PlaneGeometry(
+  200, 150,//w,h
+  50, 50//sections
+)
+
+ToQuads(geo);
+apply_gradent(geo, 0x090651, 0x19F2F7)
+
+function apply_gradent(geometry, color1, color2) {
+  const color: Color = new Color()
+  const colors = []
+  const count = geo.attributes.position.count
+  for (let index = 0; index < count; index++) {
+    const t = Math.pow(index / count, 3)// easing function
+    color.lerpColors(new Color(color1), new Color(color2), t)//lerp
+    colors.push(color.r, color.g, color.b);
+  }
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+}
+
+let m = new THREE.LineBasicMaterial({
+  // color: 0x00ffff,
+  vertexColors: true
+});
+
+let grid = new THREE.LineSegments(geo, m);
+// let grid = new THREE.LineSegments(geo, new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true }));
+
+grid.rotateX(Math.PI / 2)
+grid.position.z -= 50
+scene.add(grid);
+
+//funny convert to quad function DONT TOUCH
+// https://discourse.threejs.org/t/wireframe-of-quads/17924
+function ToQuads(g) {
+  let p = g.parameters;
+  let segmentsX = p.widthSegments
+  let segmentsY = p.heightSegments
+  let indices = [];
+  for (let i = 0; i < segmentsY + 1; i++) {
+    let index11 = 0;
+    let index12 = 0;
+    for (let j = 0; j < segmentsX; j++) {
+      index11 = (segmentsX + 1) * i + j;
+      index12 = index11 + 1;
+      let index21 = index11;
+      let index22 = index11 + (segmentsX + 1);
+      indices.push(index11, index12);
+      if (index22 < ((segmentsX + 1) * (segmentsY + 1) - 1)) {
+        indices.push(index21, index22);
+      }
+    }
+    if ((index12 + segmentsX + 1) <= ((segmentsX + 1) * (segmentsY + 1) - 1)) {
+      indices.push(index12, index12 + segmentsX + 1);
+    }
+  }
+  g.setIndex(indices);
+}
+
+//==================== knot planet====================t
+// https://codepen.io/tr13ze/pen/pbjWwg?editors=0110
+
+const KNOT_POS = 80
+
+const knot_geo = new THREE.TorusKnotGeometry(4, 1.3, 100, 16);
+var mat = new THREE.MeshPhongMaterial({
+  color: 0xffffff,
+  shading: THREE.FlatShading
+});
+const knot = new THREE.Mesh(knot_geo, mat)
+knot.position.y += KNOT_POS
+knot.rotateX(Math.PI / 2)
+scene.add(knot)
+
+const knot_geo2 = new THREE.OctahedronGeometry(11, 1);
+var mat2 = new THREE.MeshPhongMaterial({
+  color: 0xffffff,
+  wireframe: true,
+  side: THREE.DoubleSide
+
+});
+const knot_skeli = new THREE.Mesh(knot_geo2, mat2)//TODO:
+knot_skeli.position.y += KNOT_POS
+scene.add(knot_skeli)
+
+var lights = [];
+lights[0] = new THREE.DirectionalLight(0xffffff, .5);
+lights[0].position.set(10, KNOT_POS - 7, 0);
+lights[0].target = knot
+
+lights[1] = new THREE.DirectionalLight(0x11E8BB, .9);
+lights[1].position.set(8, KNOT_POS - 7, -7);
+lights[1].target = knot
+
+lights[2] = new THREE.DirectionalLight(0x8200C9, 1);
+lights[2].position.set(8, KNOT_POS - 7, 7);
+lights[2].target = knot
+
+scene.add(lights[0]);
+scene.add(lights[1]);
+scene.add(lights[2]);
+scene.add(new THREE.DirectionalLightHelper(lights[0]))
+scene.add(new THREE.DirectionalLightHelper(lights[1]))
+scene.add(new THREE.DirectionalLightHelper(lights[2]))
+
+//====================Load background texture====================   
+const img_loader = new THREE.TextureLoader();
+img_loader.load('assets/Starfield.png', function (texture) {
+  scene.background = texture;
+});
+//====================add stars==================== 
+function addStar() {
+  const geometry = new THREE.SphereGeometry(0.25, 24, 24);
+  const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  const star = new THREE.Mesh(geometry, material);
+
+  const [x, y, z] = Array(3)
+    .fill()
+    .map(() => THREE.MathUtils.randFloatSpread(100));
+
+  star.position.set(x, y, z);
+  scene.add(star);
+}
+
+Array(200).fill().forEach(addStar);
 //============================== ascii ============================== 
 scene.background = new THREE.Color(0, 0, 0);
 
-const ambientLight = new THREE.AmbientLight(0x0f0f0f);
+// const ambientLight = new THREE.AmbientLight(0x0f0f0f);
+const ambientLight = new THREE.AmbientLight(0x999999);
 scene.add(ambientLight)
 
-const pointLight1 = new THREE.PointLight(0xffffff);
-pointLight1.position.set(10, 20, 10);
-scene.add(pointLight1);
-scene.add(new THREE.PointLightHelper(pointLight1))
+// const pointLight1 = new THREE.PointLight(0xffffff);
+// pointLight1.position.set(10, 20, 10);
+// scene.add(pointLight1);
+// scene.add(new THREE.PointLightHelper(pointLight1))
 
 const torus = new THREE.Mesh(new THREE.TorusGeometry(8, 3, 32, 100), new THREE.MeshPhongMaterial({ flatShading: true }));
 // torus.position.set()
@@ -329,6 +519,10 @@ function animate() {
   // torus.rotation.x += 0.01
   // torus.rotation.y += 0.03
   // torus.rotation.z += 0.03
+  knot.rotation.z += 0.01
+  knot_skeli.rotation.x -= 0.01
+  knot_skeli.rotation.y += 0.01
+  knot_skeli.rotation.z += 0.01
 
   // logo.rotation.x += 0.01
   // logo.rotation.y += 0.01
