@@ -1,11 +1,24 @@
 import './style.css'
-import * as THREE from 'three'
+// import * as THREE from 'three'
+//Needs to be version 132 bc the bloom pass does not work
+//FIXME: rename to THREE2 or something
+import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/build/three.module.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 import { Color } from 'three/src/math/Color.js';
 import { BufferGeometry } from 'three/src/core/BufferGeometry.js';
+
+import { GUI } from 'dat.gui'
+import Stats from 'three/examples/jsm/libs/stats.module'
+
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+// import { EffectPass } from 'three/addons/postprocessing/EffectPass.js';
+import { UnrealBloomPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/ShaderPass.js';
+
 /*
   Top page:
   name, contacts, fancy animation
@@ -63,7 +76,10 @@ const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 
 const renderer = new THREE.WebGLRenderer({ // choosing which elm to use
-  canvas: document.querySelector('#bg')
+  canvas: document.querySelector('#bg'),
+  // context: GLctx,
+  alpha: true,
+  antialias: true,
 })
 // const renderer = new THREE.WebGLRenderer();
 
@@ -234,19 +250,20 @@ scene.add(sun)
 
 //====================  landscape ==================== 
 const geo = new THREE.PlaneGeometry(
-  200, 150,//w,h
+  200, 200,//w,h
   50, 50//sections
 )
 
 ToQuads(geo);
-apply_gradent(geo, 0x090651, 0x19F2F7)
+apply_gradent(geo, 0xa746c7, 0x19F2F7)
 
 function apply_gradent(geometry, color1, color2) {
   const color: Color = new Color()
   const colors = []
   const count = geo.attributes.position.count
   for (let index = 0; index < count; index++) {
-    const t = Math.pow(index / count, 3)// easing function
+    // const t = Math.pow(index / count, 1)// easing function
+    const t = index / count
     color.lerpColors(new Color(color1), new Color(color2), t)//lerp
     colors.push(color.r, color.g, color.b);
   }
@@ -259,7 +276,12 @@ let m = new THREE.LineBasicMaterial({
   vertexColors: true
 });
 
-let grid = new THREE.LineSegments(geo, m);
+const grid = new THREE.LineSegments(geo, m);
+// const grid = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+//   color: 0xffffff,
+//   // vertexColors: true,
+//   wireframe: true
+// }))
 // let grid = new THREE.LineSegments(geo, new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true }));
 
 grid.rotateX(Math.PI / 2)
@@ -319,16 +341,19 @@ const knot_skeli = new THREE.Mesh(knot_geo2, mat2)//TODO:
 knot_skeli.position.y += KNOT_POS
 scene.add(knot_skeli)
 
+const amb_light = new THREE.AmbientLight( 0x999999 ); // soft white light
+scene.add( amb_light );
+
 var lights = [];
-lights[0] = new THREE.DirectionalLight(0xffffff, .5);
+lights[0] = new THREE.DirectionalLight(0xffffff, .3);
 lights[0].position.set(10, KNOT_POS - 7, 0);
 lights[0].target = knot
 
-lights[1] = new THREE.DirectionalLight(0x11E8BB, .9);
+lights[1] = new THREE.DirectionalLight(0x11E8BB, .4);
 lights[1].position.set(8, KNOT_POS - 7, -7);
 lights[1].target = knot
 
-lights[2] = new THREE.DirectionalLight(0x8200C9, 1);
+lights[2] = new THREE.DirectionalLight(0x8200C9, .4);
 lights[2].position.set(8, KNOT_POS - 7, 7);
 lights[2].target = knot
 
@@ -359,84 +384,57 @@ function addStar() {
 }
 
 Array(200).fill().forEach(addStar);
-//============================== ascii ============================== 
-scene.background = new THREE.Color(0, 0, 0);
 
-// const ambientLight = new THREE.AmbientLight(0x0f0f0f);
-const ambientLight = new THREE.AmbientLight(0x999999);
-scene.add(ambientLight)
+//==================== bloom pass ====================  
+const params = {
+  bloomStrength: 1.1,
+  bloomThreshold: 0.41,
+  bloomRadius: 1
+};
 
-// const pointLight1 = new THREE.PointLight(0xffffff);
-// pointLight1.position.set(10, 20, 10);
-// scene.add(pointLight1);
-// scene.add(new THREE.PointLightHelper(pointLight1))
+const composer = new EffectComposer(renderer);
 
-const torus = new THREE.Mesh(new THREE.TorusGeometry(8, 3, 32, 100), new THREE.MeshPhongMaterial({ flatShading: true }));
-// torus.position.set()
-// scene.add(torus);
+const renderScene = new RenderPass(scene, camera);
+// composer.renderToScreen = false;
+composer.addPass(renderScene);
 
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+bloomPass.threshold = params.bloomThreshold;
+bloomPass.strength = params.bloomStrength;
+bloomPass.radius = params.bloomRadius;
+composer.addPass(bloomPass);
 
+// ==================== gui==================== 
+const stats = new Stats()
+document.body.appendChild(stats.dom)
 
+const gui = new GUI()
+const bloomFolder = gui.addFolder('bloom')
+bloomFolder.add(bloomPass, 'threshold', 0, 1)
+bloomFolder.add(bloomPass, 'strength', 0, 3)
+bloomFolder.add(bloomPass, 'radius', 0, 1)
+// bloomFolder.add(bloomPass, 'exposure', 0, 2)
+bloomFolder.open()
+const lightFolder = gui.addFolder('lights')
+lightFolder.add(lights[0], 'intensity', 0, 1)
+lightFolder.add(lights[1], 'intensity', 0, 1)
+lightFolder.add(lights[2], 'intensity', 0, 1)
 
-const effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
-effect.setSize(window.innerWidth, window.innerHeight);
-effect.domElement.style.color = 'white';
-effect.domElement.style.backgroundColor = 'black';
-// document.querySelector('#ascii').appendChild( effect.domElement );
+lightFolder.open()
+const amb_lightFolder = gui.addFolder('ambient lights')
+amb_lightFolder.add(amb_light, 'intensity', 0, 1)
+let p= {
+  color: 0xff00ff
+}
+amb_lightFolder.addColor(p, 'color').onChange((params) => {
+  amb_light.color.set(params)
+})
+amb_lightFolder.open()
+// const cameraFolder = gui.addFolder('Camera')
+// cameraFolder.add(camera.position, 'z', 0, 10)
+// cameraFolder.open()
 
-//==================== logos ====================  
-const logo = new THREE.Mesh(
-  new THREE.PlaneGeometry(5, 5),
-  new THREE.MeshBasicMaterial({
-    map: new THREE.TextureLoader().load('../assets/logo.png'),
-    transparent: true,
-    side: THREE.DoubleSide
-  }))
-logo.position.set(15, 0, 0)
-// scene.add(logo)
-
-const rosie = new THREE.Mesh(
-  new THREE.PlaneGeometry(5, 5),
-  new THREE.MeshBasicMaterial({
-    map: new THREE.TextureLoader().load('../assets/rosie.png'),
-    transparent: true,
-    side: THREE.DoubleSide
-  }))
-rosie.position.set(20, 0, 0)
-// scene.add(rosie)
-
-//==================== languages ==================== 
-const java = new THREE.TextureLoader().load('../assets/Java-Logo.png')
-java.repeat.set(0.5, 1)
-java.offset.set(0.255, 0)
-const html_css = new THREE.TextureLoader().load('../assets/html_css.png')
-html_css.repeat.set(1, 1.1)
-html_css.offset.set(0, -0.08)
-const cube = new THREE.Mesh(
-  new THREE.BoxGeometry(10, 10, 10),
-  [new THREE.MeshLambertMaterial({
-    map: java,
-    transparent: true,
-  }),
-  new THREE.MeshLambertMaterial({
-    map: new THREE.TextureLoader().load('../assets/c_cpp.png'),
-    transparent: true,
-  }),
-  new THREE.MeshLambertMaterial({
-    map: html_css,
-    transparent: true,
-  }),
-  new THREE.MeshLambertMaterial({
-    map: new THREE.TextureLoader().load('../assets/JS_TS.png'),
-    transparent: true,
-  }),
-  new THREE.MeshLambertMaterial({
-    map: new THREE.TextureLoader().load('../assets/bash.png'),
-    transparent: true,
-  })]
-)
-cube.position.set(35, 0, 0)
-// scene.add(cube)
+//==================== cam ====================
 
 function lerp(a, b, t: float) { return a + (b - a) * t }
 function ease(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
@@ -515,6 +513,8 @@ let spacer = 0;
 function animate() {
   requestAnimationFrame(animate) // tells browser to perform an animation
 
+  composer.render();
+
   // if (robot) robot.rotation.y += 0.01
   // torus.rotation.x += 0.01
   // torus.rotation.y += 0.03
@@ -540,9 +540,10 @@ function animate() {
   }
   spacer %= 1
   update_wave(frame_index, spacer)
-  // update_wave(0, spacer)
+
 
   controls.update()//lets us move around in the browser
-  effect.render(scene, camera) // updates UI
+  // effect.render(scene, camera) // updates ascii UI
+  stats.update()
 }
 animate()
