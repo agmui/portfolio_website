@@ -444,7 +444,7 @@ let points = [
 
 camera.position.set(points[0].x, points[0].y, points[0].z)
 
-//====================move cam on scroll==================== 
+//----move cam on scroll----
 //TODO: make a class
 
 type point = {
