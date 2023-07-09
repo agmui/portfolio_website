@@ -68,7 +68,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 
 const bg = document.querySelector('#bg')
 const renderer = new THREE.WebGLRenderer({ // choosing which elm to use
-  canvas: bg===null?undefined:bg, // some ts null problem
+  canvas: bg === null ? undefined : bg, // some ts null problem
   // context: GLctx,
   alpha: true,
   antialias: true,
@@ -87,7 +87,7 @@ renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
 
 //mesh
 
-function wireframe(name: string, size:any, shapex: any, shapez: any) {
+function wireframe(name: string, size: any, shapex: any, shapez: any) {
   // Geometry
   const wireframeGeometry = new THREE.PlaneGeometry(
     size.width, size.height, // width, height
@@ -514,25 +514,27 @@ class CameraLerp {
     document.body.onscroll = () => { this.moveCamera() } // js being cringe
 
     //precalculate point_index
-    for (let i = 0; i < points.length - 2; i++) {
+    for (let i = 0; i < points.length; i++) {
       if (this.calculatePosition()) break
     }
     //move cam to last point
-    if (this.point_index == this.last_index) {
+    console.log('this.point_index :>> ', this.point_index, this.t);
+    if (this.point_index > this.last_index) {
       this.changePos(
-        this.points[this.point_index].x,
-        this.points[this.point_index].y,
-        this.points[this.point_index].z,
+        this.points[this.last_index].x,
+        this.points[this.last_index].y,
+        this.points[this.last_index].z,
+        // this.points[this.point_index].lookAt
+      )
+      this.camera.lookAt(0,100,0)// FIXME: this is a hack solution
+    } else {
+      this.changePos(
+        this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
+        this.lerp(this.pastPoint.y, this.currentPoint.y, this.ease(-this.t)),
+        this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t)),
         // this.points[this.point_index].lookAt
       )
     }
-
-    this.changePos(
-      this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
-      this.lerp(this.pastPoint.y, this.currentPoint.y, this.ease(-this.t)),
-      this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t)),
-      // this.points[this.point_index].lookAt
-    )
   }
 
   moveCamera() {
@@ -540,70 +542,24 @@ class CameraLerp {
 
     if (this.point_index > this.last_index) return //TODO: come up with a better solution for the end
 
+    console.log('this.point_index :>> ', this.point_index, this.t);
     this.changePos(
       this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
       this.lerp(this.pastPoint.y, this.currentPoint.y, this.ease(-this.t)),
       this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t)),
       // this.points[this.point_index].lookAt
     )
-    const t_deg = -document.body.getBoundingClientRect().top / points[this.last_index].m
-    camera.rotation.x = lerp(0, Math.PI / 2, t_deg)
   }
 
   changePos(x: number, y: number, z: number) {//}, lookAt: { x: number, y: number, z: number }) {
+    const t_deg = -document.body.getBoundingClientRect().top / points[this.last_index].m// turn cam
+    camera.rotation.x = lerp(0, Math.PI / 2, t_deg)
     this.camera.position.x = x
     this.camera.position.y = y
     this.camera.position.z = z
     // this.camera.lookAt(lookAt.x, lookAt.y, lookAt.z)
   }
 }
-/*
-let point_index = 1
-const POINT_EDGE = points.length - 1
-let curPoint = points[1]
-let pastPoint = points[0]
-let t = 0
-
-function calculate_position() {
-  if (point_index < 1) point_index = 1 // first point stop
-  if (point_index > POINT_EDGE) point_index = POINT_EDGE // last point stop
-
-  t = document.body.getBoundingClientRect().top //NOTE: always negitive
-  curPoint = points[point_index]
-  pastPoint = points[point_index - 1]
-  t = (t + pastPoint.m) / (curPoint.m - pastPoint.m)// t has to stay between 0 and 1
-
-  if (t < -1) {
-    point_index++
-  } else if (t > 0) {
-    point_index--
-  } else {
-    return true
-  }
-}
-
-//precalculate point_index
-for (let i = 0; i < points.length - 2; i++) {
-  if (calculate_position()) break
-}
-//move cam to last point
-if (point_index == POINT_EDGE) {
-  camera.position.x = points[point_index].x
-  camera.position.y = points[point_index].y
-  camera.position.z = points[point_index].z
-  camera.lookAt(0, 10, 0)
-}
-
-function moveCamera() {
-  calculate_position()
-
-  if (point_index > POINT_EDGE) return //TODO: come up with a better solution for the end
-  camera.position.x = lerp(pastPoint.x, curPoint.x, ease(-t))
-  camera.position.y = lerp(pastPoint.y, curPoint.y, ease(-t))
-  camera.position.z = lerp(pastPoint.z, curPoint.z, ease(-t))
-  camera.lookAt(0, 10, 0)
-}
-*/
 
 
 const camLerp = new CameraLerp(camera, points)
