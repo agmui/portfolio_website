@@ -1,23 +1,14 @@
-import './style.css'
-// import * as THREE from 'three'
-//Needs to be version 132 bc the bloom pass does not work
-//FIXME: rename to THREE2 or something
-import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/build/three.module.js'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
-import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
+// import './style.css'
+import * as THREE from 'three'
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Color } from 'three/src/math/Color.js';
-import { BufferGeometry } from 'three/src/core/BufferGeometry.js';
-
 import { GUI } from 'dat.gui'
-import Stats from 'three/examples/jsm/libs/stats.module'
-
+// import Stats from 'three/examples/jsm/libs/stats.module'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 // import { EffectPass } from 'three/addons/postprocessing/EffectPass.js';
-import { UnrealBloomPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/ShaderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+// import { ShaderPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/ShaderPass.js';
 
 /*
   Top page:
@@ -52,7 +43,7 @@ import { ShaderPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/p
 
 */
 
-const hexToRgb = (hex, forShaders = false) => {
+const hexToRgb = (hex: any, forShaders = false) => {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (forShaders) {
     return result ? {
@@ -75,8 +66,9 @@ const scene = new THREE.Scene()
 // init cam
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 
+const bg = document.querySelector('#bg')
 const renderer = new THREE.WebGLRenderer({ // choosing which elm to use
-  canvas: document.querySelector('#bg'),
+  canvas: bg===null?undefined:bg, // some ts null problem
   // context: GLctx,
   alpha: true,
   antialias: true,
@@ -95,7 +87,7 @@ renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
 
 //mesh
 
-function wireframe(name: string, size, shapex, shapez) {
+function wireframe(name: string, size:any, shapex: any, shapez: any) {
   // Geometry
   const wireframeGeometry = new THREE.PlaneGeometry(
     size.width, size.height, // width, height
@@ -133,14 +125,16 @@ const positionAttribute = mesh.geometry.getAttribute('position');
 
 
 
-function display_text(text: string, x: int, y: int, z: int) {
+/*
+function display_text(text: string, x: number, y: number, z: number) {
 
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')
-  context.fillStyle = 'white'
-  context.font = '30px sans-serif'
-  context.fillText(text, 0, 30)
-
+  if (context) {
+    context.fillStyle = 'white'
+    context.font = '30px sans-serif'
+    context.fillText(text, 0, 30)
+  }
   // canvas contents are used for a texture
   const texture = new THREE.Texture(canvas)
   texture.needsUpdate = true
@@ -152,7 +146,7 @@ function display_text(text: string, x: int, y: int, z: int) {
   var text_mesh = new THREE.Mesh(new THREE.PlaneGeometry(text.length + 1, 2), material)
   text_mesh.position.set(x, y, z)
   return text_mesh
-}
+}*/
 
 let data: any = null
 // Fetch the json file
@@ -166,7 +160,7 @@ fetch('./output.json')
 
 
 
-function update_wave(frame: int, step) {
+function update_wave(frame: number, step: number) {
   if (data == null)
     return
   // console.log("rendering...");
@@ -257,7 +251,7 @@ const geo = new THREE.PlaneGeometry(
 ToQuads(geo);
 apply_gradent(geo, 0xa746c7, 0x19F2F7)
 
-function apply_gradent(geometry, color1, color2) {
+function apply_gradent(geometry: any, color1: any, color2: any) {
   const color: Color = new Color()
   const colors = []
   const count = geo.attributes.position.count
@@ -290,7 +284,7 @@ scene.add(grid);
 
 //funny convert to quad function DONT TOUCH
 // https://discourse.threejs.org/t/wireframe-of-quads/17924
-function ToQuads(g) {
+function ToQuads(g: any) {
   let p = g.parameters;
   let segmentsX = p.widthSegments
   let segmentsY = p.heightSegments
@@ -323,7 +317,7 @@ const KNOT_POS = 80
 const knot_geo = new THREE.TorusKnotGeometry(4, 1.3, 100, 16);
 var mat = new THREE.MeshPhongMaterial({
   color: 0xffffff,
-  shading: THREE.FlatShading
+  // shading: THREE.FlatShading
 });
 const knot = new THREE.Mesh(knot_geo, mat)
 knot.position.y += KNOT_POS
@@ -366,7 +360,7 @@ scene.add(new THREE.DirectionalLightHelper(lights[2]))
 
 //====================Load background texture====================   
 const img_loader = new THREE.TextureLoader();
-img_loader.load('assets/Starfield.png', function (texture) {
+img_loader.load('assets/Starfield.png', function (texture: any) {
   scene.background = texture;
 });
 //====================add stars==================== 
@@ -376,14 +370,14 @@ function addStar() {
   const star = new THREE.Mesh(geometry, material);
 
   const [x, y, z] = Array(3)
-    .fill()
+    .fill(0)
     .map(() => THREE.MathUtils.randFloatSpread(100));
 
   star.position.set(x, y, z);
   scene.add(star);
 }
 
-Array(200).fill().forEach(addStar);
+Array(200).fill(0).forEach(addStar);
 
 //==================== bloom pass ====================  
 const params = {
@@ -405,8 +399,8 @@ bloomPass.radius = params.bloomRadius;
 composer.addPass(bloomPass);
 
 // ==================== gui==================== 
-const stats = new Stats()
-document.body.appendChild(stats.dom)
+// const stats = new Stats()
+// document.body.appendChild(stats.dom)
 
 const gui = new GUI()
 const bloomFolder = gui.addFolder('bloom')
@@ -436,8 +430,8 @@ amb_lightFolder.open()
 
 //==================== cam ====================
 
-function lerp(a, b, t: float) { return a + (b - a) * t }
-function ease(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
+function lerp(a: number, b: number, t: number) { return a + (b - a) * t }
+// function ease(t: number) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
 
 
 //m stands for max hight
@@ -491,7 +485,7 @@ class CameraLerp {
       scene.add(sphere);
     }
     const material = new THREE.LineBasicMaterial({ color: 0xffff00 });
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const geometry = new THREE.BufferGeometry().setFromPoints(points_vec);
     const line = new THREE.Line(geometry, material);
     scene.add(line)
   }
@@ -529,7 +523,7 @@ class CameraLerp {
         this.points[this.point_index].x,
         this.points[this.point_index].y,
         this.points[this.point_index].z,
-        this.points[this.point_index].lookAt
+        // this.points[this.point_index].lookAt
       )
     }
 
@@ -537,7 +531,7 @@ class CameraLerp {
       this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
       this.lerp(this.pastPoint.y, this.currentPoint.y, this.ease(-this.t)),
       this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t)),
-      this.points[this.point_index].lookAt
+      // this.points[this.point_index].lookAt
     )
   }
 
@@ -550,13 +544,13 @@ class CameraLerp {
       this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
       this.lerp(this.pastPoint.y, this.currentPoint.y, this.ease(-this.t)),
       this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t)),
-      this.points[this.point_index].lookAt
+      // this.points[this.point_index].lookAt
     )
-    const t_deg = -document.body.getBoundingClientRect().top /points[this.last_index].m
-    camera.rotation.x = lerp(0,Math.PI/2,t_deg)
+    const t_deg = -document.body.getBoundingClientRect().top / points[this.last_index].m
+    camera.rotation.x = lerp(0, Math.PI / 2, t_deg)
   }
 
-  changePos(x: number, y: number, z: number, lookAt: { x: number, y: number, z: number }) {
+  changePos(x: number, y: number, z: number) {//}, lookAt: { x: number, y: number, z: number }) {
     this.camera.position.x = x
     this.camera.position.y = y
     this.camera.position.z = z
@@ -654,6 +648,6 @@ function animate() {
 
   // controls.update()//lets us move around in the browser
   // effect.render(scene, camera) // updates ascii UI
-  stats.update()
+  // stats.update()
 }
 animate()
