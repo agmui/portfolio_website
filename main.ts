@@ -154,7 +154,7 @@ function display_text(text: string, x: int, y: int, z: int) {
   return text_mesh
 }
 
-let data = null
+let data: any = null
 // Fetch the json file
 fetch('./output.json')
   .then((response) => response.json())
@@ -438,30 +438,14 @@ amb_lightFolder.open()
 
 function lerp(a, b, t: float) { return a + (b - a) * t }
 function ease(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
-const loader = new GLTFLoader()
 
-let py_logo = null
-// loader.load(
-//   '../assets/python.glb',
-//   gltf => {
-//     gltf.scene.scale.set(50, 50, 50)
-//     py_logo = gltf.scene
-//     cube.add(gltf.scene)
-//     py_logo.position.set(5, -6.5, 8)
-//     py_logo.rotation.y -= 1.55
-//     py_logo.rotation.z -= 0.13
-//   },
-//   xhr => { console.log((xhr.loaded / xhr.total) * 100 + '% loaded') },
-//   error => { console.log(error) }
-// )
 
 //m stands for max hight
 let points = [
-  { m: 0, x: 0, y: 10, z: 30 },
-  { m: 500, x: 0, y: 20, z: 30 },
-  { m: 1000, x: 20, y: 10, z: 30 },
-  { m: 1500, x: 20, y: 10, z: -20 },
-  { m: 3500, x: -50, y: 10, z: -10 }
+  { m: 0, x: 0, y: 10, z: 30, lookAt: { x: 0, y: 0, z: 0 } },
+  { m: 500, x: 0, y: 10, z: 20, lookAt: { x: 0, y: 0, z: 0 } },
+  { m: 1000, x: 0, y: 20, z: 10, lookAt: { x: 0, y: 0, z: 0 } },
+  { m: 1500, x: 0, y: 50, z: 0, lookAt: { x: 0, y: 100, z: 0 } },
 ]
 
 camera.position.set(points[0].x, points[0].y, points[0].z)
@@ -470,7 +454,7 @@ camera.position.set(points[0].x, points[0].y, points[0].z)
 //TODO: make a class
 
 type point = {
-  m: number, x: number, y: number, z: number
+  m: number, x: number, y: number, z: number, lookAt: { x: number, y: number, z: number }
 }
 class CameraLerp {
 
@@ -506,9 +490,9 @@ class CameraLerp {
       sphere.position.set(p.x, p.y, p.z)
       scene.add(sphere);
     }
-    const material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
-    const geometry = new THREE.BufferGeometry().setFromPoints( points );
-    const line = new THREE.Line( geometry, material );
+    const material = new THREE.LineBasicMaterial({ color: 0xffff00 });
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(geometry, material);
     scene.add(line)
   }
 
@@ -544,14 +528,16 @@ class CameraLerp {
       this.changePos(
         this.points[this.point_index].x,
         this.points[this.point_index].y,
-        this.points[this.point_index].z
+        this.points[this.point_index].z,
+        this.points[this.point_index].lookAt
       )
     }
 
     this.changePos(
       this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
       this.lerp(this.pastPoint.y, this.currentPoint.y, this.ease(-this.t)),
-      this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t))
+      this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t)),
+      this.points[this.point_index].lookAt
     )
   }
 
@@ -563,15 +549,18 @@ class CameraLerp {
     this.changePos(
       this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
       this.lerp(this.pastPoint.y, this.currentPoint.y, this.ease(-this.t)),
-      this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t))
+      this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t)),
+      this.points[this.point_index].lookAt
     )
+    const t_deg = -document.body.getBoundingClientRect().top /points[this.last_index].m
+    camera.rotation.x = lerp(0,Math.PI/2,t_deg)
   }
 
-  changePos(x: number, y: number, z: number) {
+  changePos(x: number, y: number, z: number, lookAt: { x: number, y: number, z: number }) {
     this.camera.position.x = x
     this.camera.position.y = y
     this.camera.position.z = z
-    this.camera.lookAt(0, 10, 0)
+    // this.camera.lookAt(lookAt.x, lookAt.y, lookAt.z)
   }
 }
 /*
