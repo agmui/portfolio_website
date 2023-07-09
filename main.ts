@@ -91,7 +91,7 @@ renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
 // const gridHelper = new THREE.GridHelper(200, 50) // adds grid to sceen
 // scene.add(gridHelper)
 
-const controls = new OrbitControls(camera, renderer.domElement)
+// const controls = new OrbitControls(camera, renderer.domElement)
 
 //mesh
 
@@ -250,8 +250,8 @@ scene.add(sun)
 
 //====================  landscape ==================== 
 const geo = new THREE.PlaneGeometry(
-  200, 200,//w,h
-  50, 50//sections
+  400, 200,//w,h
+  100, 50//sections
 )
 
 ToQuads(geo);
@@ -341,8 +341,8 @@ const knot_skeli = new THREE.Mesh(knot_geo2, mat2)//TODO:
 knot_skeli.position.y += KNOT_POS
 scene.add(knot_skeli)
 
-const amb_light = new THREE.AmbientLight( 0x999999 ); // soft white light
-scene.add( amb_light );
+const amb_light = new THREE.AmbientLight(0x999999); // soft white light
+scene.add(amb_light);
 
 var lights = [];
 lights[0] = new THREE.DirectionalLight(0xffffff, .3);
@@ -423,7 +423,7 @@ lightFolder.add(lights[2], 'intensity', 0, 1)
 lightFolder.open()
 const amb_lightFolder = gui.addFolder('ambient lights')
 amb_lightFolder.add(amb_light, 'intensity', 0, 1)
-let p= {
+let p = {
   color: 0xff00ff
 }
 amb_lightFolder.addColor(p, 'color').onChange((params) => {
@@ -441,19 +441,19 @@ function ease(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
 const loader = new GLTFLoader()
 
 let py_logo = null
-loader.load(
-  '../assets/python.glb',
-  gltf => {
-    gltf.scene.scale.set(50, 50, 50)
-    py_logo = gltf.scene
-    cube.add(gltf.scene)
-    py_logo.position.set(5, -6.5, 8)
-    py_logo.rotation.y -= 1.55
-    py_logo.rotation.z -= 0.13
-  },
-  xhr => { console.log((xhr.loaded / xhr.total) * 100 + '% loaded') },
-  error => { console.log(error) }
-)
+// loader.load(
+//   '../assets/python.glb',
+//   gltf => {
+//     gltf.scene.scale.set(50, 50, 50)
+//     py_logo = gltf.scene
+//     cube.add(gltf.scene)
+//     py_logo.position.set(5, -6.5, 8)
+//     py_logo.rotation.y -= 1.55
+//     py_logo.rotation.z -= 0.13
+//   },
+//   xhr => { console.log((xhr.loaded / xhr.total) * 100 + '% loaded') },
+//   error => { console.log(error) }
+// )
 
 //m stands for max hight
 let points = [
@@ -467,30 +467,165 @@ let points = [
 camera.position.set(points[0].x, points[0].y, points[0].z)
 
 //====================move cam on scroll==================== 
-let i = 1
-function moveCamera() {
-  if (i < 1) i = 1
-  else if (i <= 5) i = 4
-  //gets distance from top of pg when scrolling
-  let t = document.body.getBoundingClientRect().top //NOTE: always negitive
-  let curPoint = points[i]
-  let pastPoint = points[i - 1]
+//TODO: make a class
+
+type point = {
+  m: number, x: number, y: number, z: number
+}
+class CameraLerp {
+
+  camera: THREE.Camera;
+  points: Array<point>;
+  point_index: number;
+  last_index: number;
+  currentPoint: point;
+  pastPoint: point;
+  t: number;
+
+  constructor(camera: THREE.Camera, points: Array<point>) {
+    this.camera = camera;
+    this.points = points;
+    this.point_index = 1;
+    this.last_index = points.length - 1;
+    this.currentPoint = points[0];
+    this.pastPoint = points[1];
+    this.t = 0;
+  }
+
+  lerp(a: number, b: number, t: number) { return a + (b - a) * t }
+  ease(t: number) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t }
+
+  showPoints() {
+    const points_vec = []
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i];
+      points_vec.push(new THREE.Vector3(p.x, p.y, p.z))// for lines
+      const geometry = new THREE.SphereGeometry(1, 1, 1);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true });
+      const sphere = new THREE.Mesh(geometry, material);
+      sphere.position.set(p.x, p.y, p.z)
+      scene.add(sphere);
+    }
+    const material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
+    const geometry = new THREE.BufferGeometry().setFromPoints( points );
+    const line = new THREE.Line( geometry, material );
+    scene.add(line)
+  }
+
+  calculatePosition() {
+    if (this.point_index < 1) this.point_index = 1 // first point stop
+    if (this.point_index > this.last_index) this.point_index = this.last_index // last point stop
+
+    this.t = document.body.getBoundingClientRect().top //NOTE: always negitive
+    this.currentPoint = this.points[this.point_index]
+    this.pastPoint = this.points[this.point_index - 1]
+    this.t = (this.t + this.pastPoint.m) / (this.currentPoint.m - this.pastPoint.m)// t has to stay between 0 and 1
+
+    if (this.t < -1) {
+      this.point_index++
+    } else if (this.t > 0) {
+      this.point_index--
+    } else {
+      return true
+    }
+    return false
+  }
+
+  init() {
+    // runs func everytime user scrolls
+    document.body.onscroll = () => { this.moveCamera() } // js being cringe
+
+    //precalculate point_index
+    for (let i = 0; i < points.length - 2; i++) {
+      if (this.calculatePosition()) break
+    }
+    //move cam to last point
+    if (this.point_index == this.last_index) {
+      this.changePos(
+        this.points[this.point_index].x,
+        this.points[this.point_index].y,
+        this.points[this.point_index].z
+      )
+    }
+
+    this.changePos(
+      this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
+      this.lerp(this.pastPoint.y, this.currentPoint.y, this.ease(-this.t)),
+      this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t))
+    )
+  }
+
+  moveCamera() {
+    this.calculatePosition()
+
+    if (this.point_index > this.last_index) return //TODO: come up with a better solution for the end
+
+    this.changePos(
+      this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
+      this.lerp(this.pastPoint.y, this.currentPoint.y, this.ease(-this.t)),
+      this.lerp(this.pastPoint.z, this.currentPoint.z, this.ease(-this.t))
+    )
+  }
+
+  changePos(x: number, y: number, z: number) {
+    this.camera.position.x = x
+    this.camera.position.y = y
+    this.camera.position.z = z
+    this.camera.lookAt(0, 10, 0)
+  }
+}
+/*
+let point_index = 1
+const POINT_EDGE = points.length - 1
+let curPoint = points[1]
+let pastPoint = points[0]
+let t = 0
+
+function calculate_position() {
+  if (point_index < 1) point_index = 1 // first point stop
+  if (point_index > POINT_EDGE) point_index = POINT_EDGE // last point stop
+
+  t = document.body.getBoundingClientRect().top //NOTE: always negitive
+  curPoint = points[point_index]
+  pastPoint = points[point_index - 1]
   t = (t + pastPoint.m) / (curPoint.m - pastPoint.m)// t has to stay between 0 and 1
-  // console.log('t :>> ', t);
 
   if (t < -1) {
-    i++
+    point_index++
   } else if (t > 0) {
-    i--
+    point_index--
+  } else {
+    return true
   }
-  // console.log("t after:", t);
+}
 
+//precalculate point_index
+for (let i = 0; i < points.length - 2; i++) {
+  if (calculate_position()) break
+}
+//move cam to last point
+if (point_index == POINT_EDGE) {
+  camera.position.x = points[point_index].x
+  camera.position.y = points[point_index].y
+  camera.position.z = points[point_index].z
+  camera.lookAt(0, 10, 0)
+}
+
+function moveCamera() {
+  calculate_position()
+
+  if (point_index > POINT_EDGE) return //TODO: come up with a better solution for the end
   camera.position.x = lerp(pastPoint.x, curPoint.x, ease(-t))
   camera.position.y = lerp(pastPoint.y, curPoint.y, ease(-t))
   camera.position.z = lerp(pastPoint.z, curPoint.z, ease(-t))
   camera.lookAt(0, 10, 0)
 }
+*/
 
+
+const camLerp = new CameraLerp(camera, points)
+camLerp.showPoints()
+camLerp.init()
 //========================= window resize ==================== 
 window.addEventListener('resize', onWindowResize);
 function onWindowResize() {
@@ -499,12 +634,10 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
-  effect.setSize(window.innerWidth, window.innerHeight);
+  // effect.setSize(window.innerWidth, window.innerHeight); //acsii stuff
 
 }
 
-// runs func everytime user scrolls
-// document.body.onscroll = moveCamera
 //====================  main control loop (game loop) ====================
 
 // update_wave(0, 0)
@@ -515,23 +648,11 @@ function animate() {
 
   composer.render();
 
-  // if (robot) robot.rotation.y += 0.01
-  // torus.rotation.x += 0.01
-  // torus.rotation.y += 0.03
-  // torus.rotation.z += 0.03
   knot.rotation.z += 0.01
   knot_skeli.rotation.x -= 0.01
   knot_skeli.rotation.y += 0.01
   knot_skeli.rotation.z += 0.01
 
-  // logo.rotation.x += 0.01
-  // logo.rotation.y += 0.01
-
-  // cube.rotateX(0.01)
-  // cube.rotateY(0.01)
-  // cube.rotateZ(0.01)
-
-  // rosie.rotation.y += 0.01
 
   spacer += .17
   if (spacer >= 1 && data != null) {
@@ -542,7 +663,7 @@ function animate() {
   update_wave(frame_index, spacer)
 
 
-  controls.update()//lets us move around in the browser
+  // controls.update()//lets us move around in the browser
   // effect.render(scene, camera) // updates ascii UI
   stats.update()
 }
