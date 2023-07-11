@@ -1,47 +1,14 @@
 // import './style.css'
 import * as THREE from 'three'
-// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Color } from 'three/src/math/Color.js';
 import { GUI } from 'dat.gui'
-// import Stats from 'three/examples/jsm/libs/stats.module'
+import Stats from 'three/examples/jsm/libs/stats.module'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 // import { EffectPass } from 'three/addons/postprocessing/EffectPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 // import { ShaderPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/ShaderPass.js';
-
-/*
-  Top page:
-  name, contacts, fancy animation
-
-  school:
-  * school logo
-  * rose red background
-
-  experance:
-
-  skills:
-  * 6 langs on the 6 sides of a cube
-  Python,
-  Java,
-  C/C++,
-  JavaScript/TypeScript,
-  HTML CSS, 
-  bash
-
-  Projects randomly floating and spinning:
-  Websites | Flask, Vue, tailwind, TypeScript, JavaScript, HTML, CSS, Socket.io 
-  Real Time Object Detection For Robotic Actuation | Python           
-  Embedded Systems External Device Drivers | C, C++             
-  Auto grader
-  Robomasters Game
-  Boids: bird flock simulation
-  KD trees collision detection: optimized collision detection to log n
-  C internet socket, shell, scheduler: low-level understanding of OS
-  Created own architecture and assembly.
-  Digital Electronics: Arduino projects and soldering
-
-*/
 
 const hexToRgb = (hex: any, forShaders = false) => {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -111,10 +78,7 @@ function wireframe(name: string, size: any, shapex: any, shapez: any) {
 
 const num_segments = 20
 
-// const mesh = scene.add(wireframe("terrain", {width: 1, height: 1}, [255, 255]));
-// const mesh = wireframe("terrain", { width: 50, height: 50 }, [num_segments - 1, num_segments - 1]);
 const mesh = wireframe("terrain", { width: 450, height: 100 }, num_segments - 1, 4 - 1);
-// const mesh = wireframe("terrain", { width: 720, height: 720 }, [num_segments - 1, num_segments - 1]);
 mesh.rotateX(-Math.PI / 2)
 mesh.position.y -= 5;
 mesh.position.z -= 190;
@@ -125,16 +89,20 @@ const positionAttribute = mesh.geometry.getAttribute('position');
 
 
 
-/*
 function display_text(text: string, x: number, y: number, z: number) {
 
   const canvas = document.createElement('canvas')
+  canvas.width = 857
+  canvas.height = 210
   const context = canvas.getContext('2d')
+
   if (context) {
-    context.fillStyle = 'white'
-    context.font = '30px sans-serif'
-    context.fillText(text, 0, 30)
+    context.fillStyle = '#888888'
+    context.font = '200px sans-serif'
+    context.fillText(text, 0, 160)
   }
+  // console.log(context.measureText(text).width+20);
+
   // canvas contents are used for a texture
   const texture = new THREE.Texture(canvas)
   texture.needsUpdate = true
@@ -143,10 +111,12 @@ function display_text(text: string, x: number, y: number, z: number) {
     side: THREE.DoubleSide,
   })
   material.transparent = true
-  var text_mesh = new THREE.Mesh(new THREE.PlaneGeometry(text.length + 1, 2), material)
+  var text_mesh = new THREE.Mesh(new THREE.PlaneGeometry(157, 40), material)
   text_mesh.position.set(x, y, z)
-  return text_mesh
-}*/
+  scene.add(text_mesh)
+}
+display_text("Anthony", 0,20,-140)
+
 
 let data: any = null
 // Fetch the json file
@@ -154,7 +124,6 @@ fetch('./output.json')
   .then((response) => response.json())
   .then((json) => {
     data = json
-    console.log("read json");
   });
 
 
@@ -399,8 +368,8 @@ bloomPass.radius = params.bloomRadius;
 composer.addPass(bloomPass);
 
 // ==================== gui==================== 
-// const stats = new Stats()
-// document.body.appendChild(stats.dom)
+const stats = new Stats()
+document.body.appendChild(stats.dom)
 
 const gui = new GUI()
 const bloomFolder = gui.addFolder('bloom')
@@ -424,9 +393,6 @@ amb_lightFolder.addColor(p, 'color').onChange((params) => {
   amb_light.color.set(params)
 })
 amb_lightFolder.open()
-// const cameraFolder = gui.addFolder('Camera')
-// cameraFolder.add(camera.position, 'z', 0, 10)
-// cameraFolder.open()
 
 //==================== cam ====================
 
@@ -518,7 +484,6 @@ class CameraLerp {
       if (this.calculatePosition()) break
     }
     //move cam to last point
-    console.log('this.point_index :>> ', this.point_index, this.t);
     if (this.point_index > this.last_index) {
       this.changePos(
         this.points[this.last_index].x,
@@ -526,7 +491,7 @@ class CameraLerp {
         this.points[this.last_index].z,
         // this.points[this.point_index].lookAt
       )
-      this.camera.lookAt(0,100,0)// FIXME: this is a hack solution
+      this.camera.lookAt(0, 100, 0)// FIXME: this is a hack solution
     } else {
       this.changePos(
         this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
@@ -542,7 +507,6 @@ class CameraLerp {
 
     if (this.point_index > this.last_index) return //TODO: come up with a better solution for the end
 
-    console.log('this.point_index :>> ', this.point_index, this.t);
     this.changePos(
       this.lerp(this.pastPoint.x, this.currentPoint.x, this.ease(-this.t)),
       this.lerp(this.pastPoint.y, this.currentPoint.y, this.ease(-this.t)),
@@ -604,6 +568,6 @@ function animate() {
 
   // controls.update()//lets us move around in the browser
   // effect.render(scene, camera) // updates ascii UI
-  // stats.update()
+  stats.update()
 }
 animate()
