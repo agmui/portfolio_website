@@ -50,7 +50,7 @@ renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
 // const gridHelper = new THREE.GridHelper(200, 50) // adds grid to sceen
 // scene.add(gridHelper)
 
-// const controls = new OrbitControls(camera, renderer.domElement)
+const controls = new OrbitControls(camera, renderer.domElement)
 
 //mesh
 
@@ -89,7 +89,7 @@ const positionAttribute = mesh.geometry.getAttribute('position');
 
 
 
-function display_text(text: string, x: number, y: number, z: number) {
+function display_text(text: string, x: number, y: number, z: number, del: boolean) {
 
   const canvas = document.createElement('canvas')
   canvas.width = 857
@@ -97,8 +97,8 @@ function display_text(text: string, x: number, y: number, z: number) {
   const context = canvas.getContext('2d')
 
   if (context) {
-    context.fillStyle = '#888888'
-    context.font = '200px sans-serif'
+    context.fillStyle = '#c43db9'
+    context.font = '100px Chela\ One'
     context.fillText(text, 0, 160)
   }
   // console.log(context.measureText(text).width+20);
@@ -115,7 +115,8 @@ function display_text(text: string, x: number, y: number, z: number) {
   text_mesh.position.set(x, y, z)
   scene.add(text_mesh)
 }
-display_text("Anthony", 0,20,-140)
+display_text("ANTHONY", 42.5, 62, -50, false)
+display_text("MUI", 59, 47, -51, true)
 
 
 let data: any = null
@@ -283,15 +284,29 @@ function ToQuads(g: any) {
 
 const KNOT_POS = 80
 
-const knot_geo = new THREE.TorusKnotGeometry(4, 1.3, 100, 16);
+
+// const knot_geo = new THREE.TorusKnotGeometry(4, 1.0, 100, 16);
+const knot_geo = new THREE.TorusGeometry(4, .6, 100, 16);
 var mat = new THREE.MeshPhongMaterial({
   color: 0xffffff,
   // shading: THREE.FlatShading
 });
 const knot = new THREE.Mesh(knot_geo, mat)
+
+const knot_g2eo = new THREE.TorusGeometry(2.9, .4, 100, 16);
+const knot2 = new THREE.Mesh(knot_g2eo, mat)
+knot2.position.y += KNOT_POS
+scene.add(knot2)
+
 knot.position.y += KNOT_POS
 knot.rotateX(Math.PI / 2)
 scene.add(knot)
+
+const geometry = new THREE.SphereGeometry(1, 32, 16);
+const material = new THREE.MeshBasicMaterial({ color: 0x05a5f5 });
+const sphere = new THREE.Mesh(geometry, material); scene.add(sphere);
+sphere.position.y += KNOT_POS
+scene.add(sphere)
 
 const knot_geo2 = new THREE.OctahedronGeometry(11, 1);
 var mat2 = new THREE.MeshPhongMaterial({
@@ -552,6 +567,12 @@ function animate() {
   composer.render();
 
   knot.rotation.z += 0.01
+  knot.rotation.x += 0.01
+
+  knot2.rotation.z += 0.02
+  knot2.rotation.y += 0.01
+  knot2.rotation.x += 0.01
+
   knot_skeli.rotation.x -= 0.01
   knot_skeli.rotation.y += 0.01
   knot_skeli.rotation.z += 0.01
