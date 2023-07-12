@@ -283,6 +283,7 @@ function ToQuads(g: any) {
 // https://codepen.io/tr13ze/pen/pbjWwg?editors=0110
 
 const KNOT_POS = 80
+const KNOT_X_POS = 20
 
 
 // const knot_geo = new THREE.TorusKnotGeometry(4, 1.0, 100, 16);
@@ -296,9 +297,11 @@ const knot = new THREE.Mesh(knot_geo, mat)
 const knot_g2eo = new THREE.TorusGeometry(2.9, .4, 100, 16);
 const knot2 = new THREE.Mesh(knot_g2eo, mat)
 knot2.position.y += KNOT_POS
+knot2.position.x += KNOT_X_POS
 scene.add(knot2)
 
 knot.position.y += KNOT_POS
+knot.position.x += KNOT_X_POS
 knot.rotateX(Math.PI / 2)
 scene.add(knot)
 
@@ -306,6 +309,7 @@ const geometry = new THREE.SphereGeometry(1, 32, 16);
 const material = new THREE.MeshBasicMaterial({ color: 0x05a5f5 });
 const sphere = new THREE.Mesh(geometry, material); scene.add(sphere);
 sphere.position.y += KNOT_POS
+sphere.position.x += KNOT_X_POS
 scene.add(sphere)
 
 const knot_geo2 = new THREE.OctahedronGeometry(11, 1);
@@ -317,22 +321,24 @@ var mat2 = new THREE.MeshPhongMaterial({
 });
 const knot_skeli = new THREE.Mesh(knot_geo2, mat2)//TODO:
 knot_skeli.position.y += KNOT_POS
+knot_skeli.position.x += KNOT_X_POS
 scene.add(knot_skeli)
 
 const amb_light = new THREE.AmbientLight(0x999999); // soft white light
+// amb_light.intensity = .5
 scene.add(amb_light);
 
 var lights = [];
-lights[0] = new THREE.DirectionalLight(0xffffff, .3);
-lights[0].position.set(10, KNOT_POS - 7, 0);
+lights[0] = new THREE.DirectionalLight(0xffffff, .03);
+lights[0].position.set(KNOT_X_POS-7, KNOT_POS - 7, 0);
 lights[0].target = knot
 
 lights[1] = new THREE.DirectionalLight(0x11E8BB, .4);
-lights[1].position.set(8, KNOT_POS - 7, -7);
+lights[1].position.set(KNOT_X_POS+7, KNOT_POS - 7, -7);
 lights[1].target = knot
 
-lights[2] = new THREE.DirectionalLight(0x8200C9, .4);
-lights[2].position.set(8, KNOT_POS - 7, 7);
+lights[2] = new THREE.DirectionalLight(0x8200C9, .8);
+lights[2].position.set(KNOT_X_POS, KNOT_POS - 7, 7);
 lights[2].target = knot
 
 scene.add(lights[0]);
@@ -365,8 +371,8 @@ Array(200).fill(0).forEach(addStar);
 
 //==================== bloom pass ====================  
 const params = {
-  bloomStrength: 1.1,
-  bloomThreshold: 0.41,
+  bloomStrength: .6,
+  bloomThreshold: 0.21,
   bloomRadius: 1
 };
 
@@ -542,7 +548,7 @@ class CameraLerp {
 
 
 const camLerp = new CameraLerp(camera, points)
-camLerp.showPoints()
+// camLerp.showPoints()
 camLerp.init()
 //========================= window resize ==================== 
 window.addEventListener('resize', onWindowResize);
