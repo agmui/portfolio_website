@@ -31,7 +31,8 @@ renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
 
 // const controls = new OrbitControls(camera, renderer.domElement)
 
-function wireframe(name: string, size: any, shapex: any, shapez: any) {
+//==================== adding mountains====================  
+function mountains(name: string, size: any, shapex: any, shapez: any) {
   // Geometry
   const wireframeGeometry = new THREE.PlaneGeometry(
     size.width, size.height, // width, height
@@ -55,7 +56,7 @@ function wireframe(name: string, size: any, shapex: any, shapez: any) {
 
 const num_segments = 20
 
-const mesh = wireframe("terrain", { width: 450, height: 100 }, num_segments - 1, 4 - 1);
+const mesh = mountains("terrain", { width: 450, height: 100 }, num_segments - 1, 4 - 1);
 mesh.rotateX(-Math.PI / 2)
 mesh.position.y -= 5;
 mesh.position.z -= 190;
