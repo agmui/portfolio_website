@@ -1,9 +1,8 @@
-// import './style.css'
 import * as THREE from 'three'
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Color } from 'three/src/math/Color.js';
-import { GUI } from 'dat.gui'
-import Stats from 'three/examples/jsm/libs/stats.module'
+// import { GUI } from 'dat.gui'
+// import Stats from 'three/examples/jsm/libs/stats.module'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 // import { EffectPass } from 'three/addons/postprocessing/EffectPass.js';
@@ -25,19 +24,12 @@ const renderer = new THREE.WebGLRenderer({ // choosing which elm to use
   alpha: true,
   antialias: true,
 })
-// const renderer = new THREE.WebGLRenderer();
 
 renderer.setPixelRatio(window.devicePixelRatio) //set renderer pixel ratio
 renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
 
 
-// const lightHelper = new THREE.PointLightHelper(pointLight) // gives wireframe to light
-// const gridHelper = new THREE.GridHelper(200, 50) // adds grid to sceen
-// scene.add(gridHelper)
-
-const controls = new OrbitControls(camera, renderer.domElement)
-
-//mesh
+// const controls = new OrbitControls(camera, renderer.domElement)
 
 function wireframe(name: string, size: any, shapex: any, shapez: any) {
   // Geometry
@@ -74,7 +66,7 @@ const positionAttribute = mesh.geometry.getAttribute('position');
 
 
 
-function display_text(text: string, x: number, y: number, z: number, del: boolean) {
+function display_text(text: string, x: number, y: number, z: number) {
 
   const canvas = document.createElement('canvas')
   canvas.width = 857
@@ -86,7 +78,6 @@ function display_text(text: string, x: number, y: number, z: number, del: boolea
     context.font = '200px Chela\ One'
     context.fillText(text, 0, 205)
   }
-  // console.log(context.measureText(text).width+20);
 
   // canvas contents are used for a texture
   const texture = new THREE.Texture(canvas)
@@ -100,8 +91,8 @@ function display_text(text: string, x: number, y: number, z: number, del: boolea
   text_mesh.position.set(x, y, z)
   scene.add(text_mesh)
 }
-display_text("ANTHONY", 3, 62, -50, false)
-display_text("MUI", 20, 47, -51, true)
+display_text("ANTHONY", 3, 62, -50)
+display_text("MUI", 20, 47, -51)
 
 
 let data: any = null
@@ -113,12 +104,9 @@ fetch('./output.json')
   });
 
 
-
-
 function update_wave(frame: number, step: number) {
   if (data == null)
     return
-  // console.log("rendering...");
   let value = 0;
   for (let i = 0; i < num_segments; i++) {
     for (let j = 0; j < num_segments; j++) {
@@ -127,6 +115,7 @@ function update_wave(frame: number, step: number) {
       positionAttribute.setZ(num_segments * i + j, lerp(value, next_value, step));
 
 
+      //display height value
       // scene.add(display_text(value.toString(),positionAttribute.getX(num_segments*i+j),positionAttribute.getY(num_segments*i+j),positionAttribute.getZ(num_segments*i+j)))
       // scene.add(display_text(data[frame][i][j].toString(),positionAttribute.getX(num_segments*i+j),positionAttribute.getY(num_segments*i+j),positionAttribute.getZ(num_segments*i+j)))
     }
@@ -236,7 +225,6 @@ function apply_gradent(geometry: any, color1: any, color2: any) {
 }
 
 let m = new THREE.LineBasicMaterial({
-  // color: 0x00ffff,
   vertexColors: true
 });
 
@@ -287,42 +275,43 @@ const KNOT_X_POS = 20
 
 
 // const knot_geo = new THREE.TorusKnotGeometry(4, 1.0, 100, 16);
-const knot_geo = new THREE.TorusGeometry(4, .6, 100, 16);
+const planet_ring = new THREE.TorusGeometry(4, .6, 100, 16);
 var mat = new THREE.MeshPhongMaterial({
   color: 0xffffff,
   // shading: THREE.FlatShading
 });
-const knot = new THREE.Mesh(knot_geo, mat)
+const ring = new THREE.Mesh(planet_ring, mat)
 
-const knot_g2eo = new THREE.TorusGeometry(2.9, .4, 100, 16);
-const knot2 = new THREE.Mesh(knot_g2eo, mat)
-knot2.position.y += KNOT_POS
-knot2.position.x += KNOT_X_POS
-scene.add(knot2)
+const planet_ring2 = new THREE.TorusGeometry(2.9, .4, 100, 16);
+const ring2 = new THREE.Mesh(planet_ring2, mat)
+ring2.position.y += KNOT_POS
+ring2.position.x += KNOT_X_POS
+scene.add(ring2)
 
-knot.position.y += KNOT_POS
-knot.position.x += KNOT_X_POS
-knot.rotateX(Math.PI / 2)
-scene.add(knot)
+ring.position.y += KNOT_POS
+ring.position.x += KNOT_X_POS
+ring.rotateX(Math.PI / 2)
+scene.add(ring)
 
-const geometry = new THREE.SphereGeometry(1, 32, 16);
+const sphere = new THREE.SphereGeometry(1, 32, 16);
 const material = new THREE.MeshBasicMaterial({ color: 0x05a5f5 });
-const sphere = new THREE.Mesh(geometry, material); scene.add(sphere);
-sphere.position.y += KNOT_POS
-sphere.position.x += KNOT_X_POS
-scene.add(sphere)
+const planet = new THREE.Mesh(sphere, material);
+scene.add(planet);
+planet.position.y += KNOT_POS
+planet.position.x += KNOT_X_POS
+scene.add(planet)
 
-const knot_geo2 = new THREE.OctahedronGeometry(11, 1);
+const octahedron = new THREE.OctahedronGeometry(11, 1);
 var mat2 = new THREE.MeshPhongMaterial({
   color: 0xffffff,
   wireframe: true,
   side: THREE.DoubleSide
 
 });
-const knot_skeli = new THREE.Mesh(knot_geo2, mat2)//TODO:
-knot_skeli.position.y += KNOT_POS
-knot_skeli.position.x += KNOT_X_POS
-scene.add(knot_skeli)
+const planet_skeli = new THREE.Mesh(octahedron, mat2)
+planet_skeli.position.y += KNOT_POS
+planet_skeli.position.x += KNOT_X_POS
+scene.add(planet_skeli)
 
 const amb_light = new THREE.AmbientLight(0x999999); // soft white light
 // amb_light.intensity = .5
@@ -331,22 +320,22 @@ scene.add(amb_light);
 var lights = [];
 lights[0] = new THREE.DirectionalLight(0xffffff, .03);
 lights[0].position.set(KNOT_X_POS - 7, KNOT_POS - 7, 0);
-lights[0].target = knot
+lights[0].target = ring
 
 lights[1] = new THREE.DirectionalLight(0x11E8BB, .4);
 lights[1].position.set(KNOT_X_POS + 7, KNOT_POS - 7, -7);
-lights[1].target = knot
+lights[1].target = ring
 
 lights[2] = new THREE.DirectionalLight(0x8200C9, .8);
 lights[2].position.set(KNOT_X_POS, KNOT_POS - 7, 7);
-lights[2].target = knot
+lights[2].target = ring
 
 scene.add(lights[0]);
 scene.add(lights[1]);
 scene.add(lights[2]);
-scene.add(new THREE.DirectionalLightHelper(lights[0]))
-scene.add(new THREE.DirectionalLightHelper(lights[1]))
-scene.add(new THREE.DirectionalLightHelper(lights[2]))
+// scene.add(new THREE.DirectionalLightHelper(lights[0]))
+// scene.add(new THREE.DirectionalLightHelper(lights[1]))
+// scene.add(new THREE.DirectionalLightHelper(lights[2]))
 
 //====================Load background texture====================   
 const img_loader = new THREE.TextureLoader();
@@ -389,6 +378,7 @@ bloomPass.radius = params.bloomRadius;
 composer.addPass(bloomPass);
 
 // ==================== gui==================== 
+/*
 const stats = new Stats()
 document.body.appendChild(stats.dom)
 
@@ -413,7 +403,7 @@ let p = {
 amb_lightFolder.addColor(p, 'color').onChange((params) => {
   amb_light.color.set(params)
 })
-amb_lightFolder.open()
+amb_lightFolder.open()*/
 
 //==================== cam ====================
 
@@ -432,7 +422,6 @@ let points = [
 camera.position.set(points[0].x, points[0].y, points[0].z)
 
 //----move cam on scroll----
-//TODO: make a class
 
 type point = {
   m: number, x: number, y: number, z: number, lookAt: { x: number, y: number, z: number }
@@ -548,7 +537,7 @@ class CameraLerp {
 
 
 const camLerp = new CameraLerp(camera, points)
-camLerp.showPoints()
+// camLerp.showPoints()
 camLerp.init()
 //========================= window resize ==================== 
 window.addEventListener('resize', onWindowResize);
@@ -564,7 +553,6 @@ function onWindowResize() {
 
 //====================  main control loop (game loop) ====================
 
-// update_wave(0, 0)
 let frame_index = 0;
 let spacer = 0;
 function animate() {
@@ -572,16 +560,16 @@ function animate() {
 
   composer.render();
 
-  knot.rotation.z += 0.01
-  knot.rotation.x += 0.01
+  ring.rotation.z += 0.01
+  ring.rotation.x += 0.01
 
-  knot2.rotation.z += 0.02
-  knot2.rotation.y += 0.01
-  knot2.rotation.x += 0.01
+  ring2.rotation.z += 0.02
+  ring2.rotation.y += 0.01
+  ring2.rotation.x += 0.01
 
-  knot_skeli.rotation.x -= 0.01
-  knot_skeli.rotation.y += 0.01
-  knot_skeli.rotation.z += 0.01
+  planet_skeli.rotation.x -= 0.01
+  planet_skeli.rotation.y += 0.01
+  planet_skeli.rotation.z += 0.01
 
 
   spacer += .17
@@ -595,6 +583,6 @@ function animate() {
 
   // controls.update()//lets us move around in the browser
   // effect.render(scene, camera) // updates ascii UI
-  stats.update()
+  // stats.update()
 }
 animate()
