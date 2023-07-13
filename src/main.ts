@@ -10,21 +10,6 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 // import { ShaderPass } from 'https://cdn.skypack.dev/three@0.132.2/examples/jsm/postprocessing/ShaderPass.js';
 
-const hexToRgb = (hex: any, forShaders = false) => {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (forShaders) {
-    return result ? {
-      r: parseInt(result[1], 16) / 255,
-      g: parseInt(result[2], 16) / 255,
-      b: parseInt(result[3], 16) / 255
-    } : null;
-  }
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : null;
-}
 //==================== setup ==================== 
 // setup needs 3 things: scene, cam, renderer
 // init scene
@@ -98,8 +83,8 @@ function display_text(text: string, x: number, y: number, z: number, del: boolea
 
   if (context) {
     context.fillStyle = '#c43db9'
-    context.font = '100px Chela\ One'
-    context.fillText(text, 0, 160)
+    context.font = '200px Chela\ One'
+    context.fillText(text, 0, 205)
   }
   // console.log(context.measureText(text).width+20);
 
@@ -111,12 +96,12 @@ function display_text(text: string, x: number, y: number, z: number, del: boolea
     side: THREE.DoubleSide,
   })
   material.transparent = true
-  var text_mesh = new THREE.Mesh(new THREE.PlaneGeometry(157, 40), material)
+  var text_mesh = new THREE.Mesh(new THREE.PlaneGeometry(78.5, 20), material)
   text_mesh.position.set(x, y, z)
   scene.add(text_mesh)
 }
-display_text("ANTHONY", 42.5, 62, -50, false)
-display_text("MUI", 59, 47, -51, true)
+display_text("ANTHONY", 3, 62, -50, false)
+display_text("MUI", 20, 47, -51, true)
 
 
 let data: any = null
@@ -191,13 +176,28 @@ function fragmentShader() {
   `
 }
 
+/*const hexToRgb = (hex: any, forShaders = false) => {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (forShaders) {
+    return result ? {
+      r: parseInt(result[1], 16) / 255,
+      g: parseInt(result[2], 16) / 255,
+      b: parseInt(result[3], 16) / 255
+    } : null;
+  }
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}*/
 const uniforms = {
   // ...getDefaultUniforms(),
   color_main: { // sun's top color
-    value: hexToRgb("#fc36c9", true)
+    value: { r: 0.9882352941176471, g: 0.21176470588235294, b: 0.788235294117647 } //hexToRgb("#fc36c9", true)
   },
   color_accent: { // sun's bottom color
-    value: hexToRgb("#923dea", true)
+    value: { r: 0.5725490196078431, g: 0.23921568627450981, b: 0.9176470588235294 }//hexToRgb("#923dea", true)
   }
 }
 
@@ -330,11 +330,11 @@ scene.add(amb_light);
 
 var lights = [];
 lights[0] = new THREE.DirectionalLight(0xffffff, .03);
-lights[0].position.set(KNOT_X_POS-7, KNOT_POS - 7, 0);
+lights[0].position.set(KNOT_X_POS - 7, KNOT_POS - 7, 0);
 lights[0].target = knot
 
 lights[1] = new THREE.DirectionalLight(0x11E8BB, .4);
-lights[1].position.set(KNOT_X_POS+7, KNOT_POS - 7, -7);
+lights[1].position.set(KNOT_X_POS + 7, KNOT_POS - 7, -7);
 lights[1].target = knot
 
 lights[2] = new THREE.DirectionalLight(0x8200C9, .8);
@@ -361,7 +361,7 @@ function addStar() {
 
   const [x, y, z] = Array(3)
     .fill(0)
-    .map(() => THREE.MathUtils.randFloatSpread(100));
+    .map(() => THREE.MathUtils.randFloatSpread(100) + 5);
 
   star.position.set(x, y, z);
   scene.add(star);
@@ -548,7 +548,7 @@ class CameraLerp {
 
 
 const camLerp = new CameraLerp(camera, points)
-// camLerp.showPoints()
+camLerp.showPoints()
 camLerp.init()
 //========================= window resize ==================== 
 window.addEventListener('resize', onWindowResize);
