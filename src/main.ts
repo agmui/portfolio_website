@@ -76,7 +76,7 @@ function display_text(text: string, x: number, y: number, z: number) {
 
   if (context) {
     context.fillStyle = '#c43db9'
-    context.font = '200px Chela\ One'
+    context.font = '200px spaceShardsItalic'
     context.fillText(text, 0, 205)
   }
 
