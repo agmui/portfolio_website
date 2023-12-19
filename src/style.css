@@ -33,6 +33,77 @@ canvas {
   scrollbar-width: none;  /* Firefox */
 } 
 
+/* bouncing arrow */
+
+#bounce {
+
+  /* position: relative; */
+  position: absolute;
+  /* position: static; */
+  /* position: sticky; */
+  bottom: 0;
+  left:50%;
+  bottom:0%;
+  margin-left:-65px;
+  /* margin-top: -20cm; */
+  filter: invert(90%);/* sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%); */
+  width:130px;
+  height:130px;
+  -moz-animation: bounce 2s infinite;
+  -webkit-animation: bounce 2s infinite;
+  animation: bounce 2s infinite;
+
+}
+
+@-moz-keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    -moz-transform: translateY(0);
+    transform: translateY(0);
+  }
+  40% {
+    -moz-transform: translateY(-40px);
+    transform: translateY(-40px);
+  }
+  60% {
+    -moz-transform: translateY(-25px);
+    transform: translateY(-25px);
+  }
+}
+@-webkit-keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+  40% {
+    -webkit-transform: translateY(-40px);
+    transform: translateY(-40px);
+  }
+  60% {
+    -webkit-transform: translateY(-25px);
+    transform: translateY(-25px);
+  }
+}
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    -moz-transform: translateY(0);
+    -ms-transform: translateY(0);
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+  40% {
+    -moz-transform: translateY(-40px);
+    -ms-transform: translateY(-40px);
+    -webkit-transform: translateY(-40px);
+    transform: translateY(-40px);
+  }
+  60% {
+    -moz-transform: translateY(-25px);
+    -ms-transform: translateY(-25px);
+    -webkit-transform: translateY(-25px);
+    transform: translateY(-25px);
+  }
+}
+
 main {
   width: 100vw;
   color: var(--light-text);
@@ -57,7 +128,7 @@ blockquote {
 
 header {
   z-index: 1;
-  position: relative;
+  /* position: relative; */
 }
 
 header {

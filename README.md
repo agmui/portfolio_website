@@ -2,7 +2,9 @@
 
 ![website preview](assets/2023-07-09_16-16.png)
 
+requires Node.js version 18+. 20+
 to use:  
+`nvm use latest`
 `npm install`  
 `npm run dev`  
 

@@ -14,6 +14,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 // init scene
 const scene = new THREE.Scene()
 
+
 // init cam
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 
@@ -427,6 +428,7 @@ camera.position.set(points[0].x, points[0].y, points[0].z)
 type point = {
   m: number, x: number, y: number, z: number, lookAt: { x: number, y: number, z: number }
 }
+
 class CameraLerp {
 
   camera: THREE.Camera;
@@ -514,6 +516,11 @@ class CameraLerp {
   }
 
   moveCamera() {
+    // --- fading arrow
+    let top = document.body.getBoundingClientRect().top
+    document.getElementById('bounce').style.opacity = 1+top/400//1-(-top/400)
+    // ---
+
     this.calculatePosition()
 
     if (this.point_index > this.last_index) return //TODO: come up with a better solution for the end
