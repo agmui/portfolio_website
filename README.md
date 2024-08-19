@@ -15,7 +15,12 @@ to use:
 
 To deploy:
 
-`firebase deploy`
+```bash
+npm run build
+# copy and move everything in dist to public
+firebase deploy
+```
+
 
 > Note: you might need to do `firebase logout` and `firebase login`
 
