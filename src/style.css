@@ -17,10 +17,6 @@ canvas {
   font-style: normal;
 }
 
-@font-face {
-  font-family: spaceShardsItalic;
-  src: url(../assets/SpaceShardsItalic-nRem1.ttf);
-}
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .example::-webkit-scrollbar {

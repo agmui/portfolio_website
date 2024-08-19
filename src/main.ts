@@ -2,7 +2,6 @@ import * as THREE from 'three'
 // import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Color } from 'three/src/math/Color.js';
 // import { GUI } from 'dat.gui'
-// import Stats from 'three/examples/jsm/libs/stats.module'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 // import { EffectPass } from 'three/addons/postprocessing/EffectPass.js';
@@ -75,6 +74,7 @@ function display_text(text: string, x: number, y: number, z: number) {
   canvas.height = 210
   const context = canvas.getContext('2d')
 
+  console.log(document.fonts.check("200px spaceShardsItalic"))
   if (context) {
     context.fillStyle = '#c43db9'
     context.font = '200px spaceShardsItalic'
@@ -380,9 +380,8 @@ bloomPass.radius = params.bloomRadius;
 composer.addPass(bloomPass);
 
 // ==================== gui==================== 
+
 /*
-const stats = new Stats()
-document.body.appendChild(stats.dom)
 
 const gui = new GUI()
 const bloomFolder = gui.addFolder('bloom')
@@ -405,7 +404,8 @@ let p = {
 amb_lightFolder.addColor(p, 'color').onChange((params) => {
   amb_light.color.set(params)
 })
-amb_lightFolder.open()*/
+amb_lightFolder.open()
+// */
 
 //==================== cam ====================
 
@@ -518,7 +518,9 @@ class CameraLerp {
   moveCamera() {
     // --- fading arrow
     let top = document.body.getBoundingClientRect().top
-    document.getElementById('bounce').style.opacity = 1+top/400//1-(-top/400)
+    let arrow = document.getElementById('bounce')
+    if(arrow===null)return
+    arrow.style.opacity = `${1+top/400}`
     // ---
 
     this.calculatePosition()
@@ -563,7 +565,12 @@ function onWindowResize() {
 
 let frame_index = 0;
 let spacer = 0;
+
+// import Stats from 'three/examples/jsm/libs/stats.module'
+// const stats = new Stats()
+// document.body.appendChild(stats.dom)
 function animate() {
+  // stats.update()
   requestAnimationFrame(animate) // tells browser to perform an animation
 
   composer.render();
@@ -591,6 +598,5 @@ function animate() {
 
   // controls.update()//lets us move around in the browser
   // effect.render(scene, camera) // updates ascii UI
-  // stats.update()
 }
 animate()
