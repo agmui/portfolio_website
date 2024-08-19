@@ -6,18 +6,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
-  
+  <link rel="shortcut icon" href="/assets/favicon-yIHAC_0-.ico">
   <title>agmui</title>
 
-  <script type="module" crossorigin src="/assets/index-1f3a676f.js"></script>
-  <link rel="stylesheet" href="/assets/index-6c762e44.css">
+  <script type="module" crossorigin src="/assets/index-V_nnrG0s.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-txKCKWKP.css">
 </head>
 
 <body>
   <canvas id="bg"></canvas>
+  <img id="bounce" src = "data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20height='24'%20viewBox='0%20-960%20960%20960'%20width='24'%3e%3cpath%20d='M480-345%20240-585l56-56%20184%20184%20184-184%2056%2056-240%20240Z'/%3e%3c/svg%3e" alt="down arrow"/>
   <main>
     <header>
-      v scroll down v
       <h1>Anthony Mui</h1>
       <p>muian@rose-hulman.edu</p>
     </header>
@@ -30,7 +30,7 @@
         Also I am Minoring in AI and Japanese.
         My interest are mostly in programming, DIY projects, math, and AI.
       </p>
-      <h3><a href="./assets/Resume.pdf" style="color: aquamarine;">Click here for my resume!</a></h3>
+      <h3><a href="./assets/Resume.pdf" style="font-family: sans-serif; color: aquamarine;">Click here for my resume!</a></h3>
     </section>
 
 
@@ -39,6 +39,20 @@
     </blockquote>
 
     <section class="light">
+
+      <p>
+        Robotics Researcher for the Blossom HCI
+        <ul>
+          <li>
+            Led Multi-Modal Interface Development: Spearheaded the creation of multi-modal interfaces incorporating speech2text,
+            gesture recognition, and visual feedback to facilitate intuitive user interactions.
+          </li>
+          <li>
+            Published Research and Findings: Co-authored research papers and presentations detailing advancements in socially
+            assistive robotics, contributing to the project's academic recognition. 
+          </li>
+        </ul>
+      </p>
 
       <p>
         Rose-Hulman Academic Assistant | 2021 - Present
@@ -54,9 +68,9 @@
 
       <h2>Skills</h2>
       <p>
-        Programming Languages: Python, Java, C/C++, TypeScript, HTML, CSS, SQL
+        Programming Languages: Python, Java, C/C++, TypeScript, HTML, CSS, SQL, Scheme, Matlab
 
-        Frameworks: Docker, Node.js, Django, TensorFlow, PyTorch, OpenCV, ROS, numpy, firebase
+        Frameworks: Docker, Node.js, Django, TensorFlow, PyTorch, OpenCV, ROS, pandas, firebase
 
       </p>
 
@@ -67,59 +81,113 @@
       <p>Projects</p>
     </blockquote>
 
-    <section class="small-box">
+    <section>
+      <h2>
+          <a href="https://github.com/RHIT-CSSE333/spring2023project-s4g3-what-does-it-run">StackScan</a>: Website tech stack tracker
+      </h2>
       <p>
-      <h2>Websites</h2>
-      <ul>
-        <li>
-          <a href="https://github.com/agmui/unstable-unicorns">Node JS Multiplayer Card Game</a>
-        </li>
-
-        <li>
-          <a href="#">portfolio website</a>
-        </li>
-
-        <li>
-          <a href="https://robomasters-website.web.app/">team website</a>
-        </li>
-
-        <li>
-          <a href="https://github.com/RHIT-CSSE333/spring2023project-s4g3-what-does-it-run">SQL project</a>
-        </li>
-      </ul>
+        A website that shows stats about the most commonly used tech stacks used on websites:
+        This is done by web scrapers, which are stored in an SQL database.
+        The whole website is hosted on Firebase and the front end is done with
+        Next.js with Prisma to communicate with the SQL database.
       </p>
     </section>
 
     <section>
+      <h2>Notion2Webpage CMS deployment</h2>
 
-      <h2>Robomasters Computer Vision</h2>
+      <a href="https://agmui.github.io/rhit_docs.github.io/docs/getting_started/">website</a>
       <p>
-        What is Robomasters?:
-        Robomasters is a robotics competition for college students. The teams are put against each other
-        in a 1 on 1 with each team having 3 robots on their side. The game kind of plays like a fps
-        shooter and the goal is to take the enemy team's base and defeat it.
-        <a
-          href="https://www.youtube.com/watch?time_continue=2&v=ECr4zgK6cPA&embeds_referring_euri=https%3A%2F%2Frobomasters-website.web.app%2F&feature=emb_logo">click
-          here for more info</a>
+        Converts Notion pages into markdown and then applies a Hugo theme to then be deployed onto GitHub pages.
+        The whole process is automated with Github actions pulling from the notion API every hour.
+        This also supports multiple levels of sub directories which other implementations don't support.
+      </p>
+    </section>
+
+    <section>
+      <h2>Blossom research</h2>
+      Robotics research about HCI. Originally developed my CMU:(https://github.com/hrc2/blossom-public)
+      blossom is an open-source programmable animation that can interact with humans.
+      For our implementation, we added gesture recognition to be able to play any animation
+      given a specific hand gesture and a simple chatbot program using OpenAi's speech2text, gpt4, and text2speech.
+    </section>
+<!-- 
+    <section class="small-box">
+      <h2>Robomasters</h2>
+      What is <a href="https://www.youtube.com/watch?v=ECr4zgK6cPA&t=1s">RoboMasters?</a>
+
+      <ul>
+        <li>
+          pi pico dev:
+              ported old robotics codebase (taproot) to work on the raspberry pi pico. This was in an effort to cut costs compared to the Robomasters type-c
+        </li>
+        <li>
+          yolov8:
+              - Developed a real-time object detection system for RoboMasters to find and move a robot to hit fast-moving panels
+              - Implemented an end-to-end real-time inference pipeline including filtering raw image data and feeding it to the model for inference
+        </li>
+        <li>
+          game: Robomasters RMUL game simulator written in Godot
+        </li>
+        <li>
+          website:
+              - Created team front-facing website using three.js and tailwind
+              - https://robomasters-website.web.app/
+        </li>
+      </ul>
+    </section> -->
+
+
+    <section>
+
+      <h2>Robomasters Embed development and CV/AI </h2>
+      <p>
+        <b>What is 
+          <a
+            href="https://www.youtube.com/watch?time_continue=2&v=ECr4zgK6cPA&embeds_referring_euri=https%3A%2F%2Frobomasters-website.web.app%2F&feature=emb_logo">
+            Robomasters?:
+          </a>
+        </b>
+        <br>
+        Robomasters is a robotics competition for college students. 
+        Teams each bring three robots to fight 3v3 in a FPS area.
+        The goal is to shoot the enemy team's base and defeat it.
       </p>
 
       <p>
-        At my School, I am the CV-AI software lead and I mainly handle the auto-aiming and automatic movement of the
-        robots.
-        We use a Nividia Jetson Xavier and YoloV8 for our auto-aiming. We also have a robot running fully autonomous
-        with ROS integration.
+        As software lead I oversee and teach three sub teams:
+
+        Controls team:
+          We mainly program on our custom board driven by the pi pico.
+          
+          Reading and controling an array of sensors on our custom board baised around the pi pico.
+
+        CV team:
+          the auto-aiming and automatic movement of the robots.
+          We use a Nividia Jetson Xavier and YoloV8 for our auto-aiming. We also have a robot running fully autonomous
+          with ROS integration.
+
+        Sentry team:
+          ROS
 
       </p>
-      Here is some of the work I have done for the team:
+      Links
+      <br>
       <a href="https://github.com/Thornbots/CV">https://github.com/Thornbots/CV</a>
+      <br>
+      <a href="https://github.com/agmui/sample_rm_pico_app">Robot codebase</a>
     </section>
 
     <section>
       <h2>AI autograder script</h2>
       <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam voluptatum ad exercitationem similique enim aperiam
-        perspiciatis nobis veniam eum aspernatur veritatis, id earum quia consectetur corporis assumenda beatae in
-        natus.
+        I helped setup the autograder on 
+        <a href="https://www.gradescope.com/get_started">
+          Gradescope_Setup
+        </a>
+        for the Operating Systems class.
+        The future plan is to implement a lexical parser and AI autograder to help
+        speed up grading.
       </p>
       Here is the github:
       <a href="https://github.com/agmui/Gradescope_Setup">https://github.com/agmui/Gradescope_Setup</a>
@@ -128,26 +196,45 @@
       <p>
       <h2>Other Projects</h2>
       <ul>
-        <li> Embedded Systems External Device Drivers </li>
-        <li>Robomasters Game</li>
-        <li>Boids: bird flock simulation </li>
-        <li>KD trees collision detection demo</li>
-        <li>C internet socket, shell, scheduler: low-level understanding of OS</li>
-        <li>Created own architecture and assembly.</li>
+        <li>
+          Robomasters:
+          <ul>
+            <li> rm pico dev </li>
+            <li>Robomasters Game</li>
+          </ul>
+        </li>
+        <li>
+          School projects:
+          <ul>
+            <li>custom RISC-V processor</li>
+            <li>KD trees collision detection demo</li>
+            <!-- * avl trees? -->
+            <li> all of bio ai </li>
+            <li> os heapman2 </li>
+            <li> scheme interpreter </li>
+          </ul>
+        </li>
+        <li>
+          random stuff repo
+          <ul>
+            <li>collatz Conjecture</li> 
+            <li>conways game of life</li>
+            <li>LM game</li> 
+            <li>Langton's Ant</li> 
+            <li>Snake</li> 
+            <li>Boids: bird flock simulation </li>
+          </ul>
+        </li>
+        <li> Genetic alg framwork?  </li>
+        <li> splines c++ </li>
         <li>Digital Electronics: Arduino projects and soldering</li>
       </ul>
       </p>
     </section>
 
     <section class="left">
-      <h2>About me</h2>
+      <!-- <h2>About me</h2> -->
 
-      <p>
-        As I said above I am a computer science major at Rose-Hulman Institute of Technology.
-        AI is my main interest and I love developing software in general.
-        In my free time, I often do DIY or coding projects from embedded systems to AIs.
-        A random fact about me is that I am Fluent in Chinese and Beginner-level Japanese.
-      </p>
       Thanks for visiting my website!
     </section>
 
@@ -199,7 +286,6 @@
       </ul>
       <a href="https://github.com/agmui/portfolio_website">Github to website</a>
     </section>
-    
 </body>
 
 </html>

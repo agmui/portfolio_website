@@ -6,9 +6,20 @@
 
 requires Node.js version 18+. 20+
 to use:  
+
 `nvm use latest`
+
 `npm install`  
+
 `npm run dev`  
+
+To deploy:
+
+`firebase deploy`
+
+> Note: you might need to do `firebase logout` and `firebase login`
+
+
 
 ## links:
 * [main inspiration](https://atelier.net/virtual-economy/)
