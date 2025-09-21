@@ -96,6 +96,11 @@ function display_text(text: string, x: number, y: number, z: number) {
 
 // Define a FontFace
 const font = new FontFace("spaceShardsItalic", 'url("assets/SpaceShardsItalic-nRem1-f7a5b7b2.ttf")'); // Note: uses weird bundled url
+/*
+the font.css preloading does not work for this file so we have to preload it here with FontFace()
+stack overflow link:
+https://stackoverflow.com/questions/2756575/drawing-text-to-canvas-with-font-face-does-not-work-at-the-first-time/7289880#7289880
+*/
 
 // Add to the document.fonts (FontFaceSet)
 document.fonts.add(font);
