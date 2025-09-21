@@ -74,7 +74,7 @@ function display_text(text: string, x: number, y: number, z: number) {
   canvas.height = 210
   const context = canvas.getContext('2d')
 
-  console.log(document.fonts.check("200px spaceShardsItalic"))
+  // console.log('is font loaded:',document.fonts.check("200px spaceShardsItalic"))
   if (context) {
     context.fillStyle = '#c43db9'
     context.font = '200px spaceShardsItalic'
@@ -93,8 +93,21 @@ function display_text(text: string, x: number, y: number, z: number) {
   text_mesh.position.set(x, y, z)
   scene.add(text_mesh)
 }
-display_text("ANTHONY", 3, 62, -50)
-display_text("MUI", 20, 47, -51)
+
+// Define a FontFace
+const font = new FontFace("spaceShardsItalic", 'url("assets/SpaceShardsItalic-nRem1-f7a5b7b2.ttf")'); // Note: uses weird bundled url
+
+// Add to the document.fonts (FontFaceSet)
+document.fonts.add(font);
+font.load().then(() => {
+  display_text("ANTHONY", 3, 62, -50)
+  display_text("MUI", 20, 47, -51)
+},
+(err) =>{
+  console.log(err)
+}
+)
+
 
 
 let data: any = null
