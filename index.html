@@ -6,9 +6,15 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+  <!-- <link rel="preload" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" as="font" type="font/woff2" crossorigin> -->
+  <!-- <link rel="preload" href="assets/SpaceShardsItalic-nRem1.ttf" as="font" type="font/ttf" crossorigin> -->
   <link rel="stylesheet" href="assets/font.css">
   <link rel="stylesheet" href="src/style.css">
   <link rel="shortcut icon" href="favicon.ico">
+  <!-- <link rel="preload" href="favicon.ico" as="image" crossorigin> -->
+
+  <!-- <link rel="preload" href="assets/Starfield.png" as="image" type="image/png" crossorigin> -->
+  <!-- <link rel="preload" href="src/output.json" as="json" type="json" crossorigin> -->
   <title>agmui</title>
 
 </head>
@@ -26,11 +32,12 @@
       <h2>Hey, I'm Anthony</h2>
       <p>
         <hr>
-        I am a Computer Science Major at Rose-Hulman Institute of Technology.
-        Also I am Minoring in AI and Japanese.
-        My interest are mostly in programming, DIY projects, math, and AI.
+        I am a Computer Science Graduate at Rose-Hulman Institute of Technology.
+        Also I have a Minoring in Math.
+        My interest are mostly in programming, DIY projects, and Electronics.
       </p>
       <h3><a href="./assets/Resume.pdf" style="font-family: sans-serif; color: aquamarine;">Click here for my resume!</a></h3>
+      <small>(here are my <a href="https://github.com/agmui/dotFiles">dotfiles</a> configs if you are interested)</small>
     </section>
 
 
@@ -41,21 +48,35 @@
     <section class="light">
 
       <p>
-        Robotics Researcher for the Blossom HCI
+        Backend & Infrastructure Engineer
         <ul>
           <li>
-            Led Multi-Modal Interface Development: Spearheaded the creation of multi-modal interfaces incorporating speech2text,
-            gesture recognition, and visual feedback to facilitate intuitive user interactions.
+            Designed and built a full-stack Catan game with C++ backend and Protocol Buffers for communication with the frontend.
           </li>
           <li>
-            Published Research and Findings: Co-authored research papers and presentations detailing advancements in socially
-            assistive robotics, contributing to the project's academic recognition. 
+            Deployed and maintained company website, implementing custom infrastructure and hosting.
           </li>
         </ul>
       </p>
 
       <p>
-        Rose-Hulman Academic Assistant | 2021 - Present
+        Robotics Researcher for the Blossom HCI | 2024-2025 
+        <ul>
+          <li>
+            <a href="https://github.com/agmui/blossom-public">github</a>
+          </li>
+          <li>
+            Robotics research about HCI. Originally <a href="https://github.com/hrc2/blossom-public">developed by CMU</a>:
+            blossom is an open-source programmable animation that can interact with humans.
+            For our implementation, we added gesture recognition to be able to play any animation
+            given a specific hand gesture and a simple chatbot program using OpenAi's speech2text, gpt4, and text2speech.
+          </li>
+          <img src="assets/blossom.jpg" alt="blossom window image" height="300">
+        </ul>
+      </p>
+
+      <p>
+        Rose-Hulman Academic Assistant | 2021 - 2025
       <ul>
         <li>
           Create internal tooling using a bash script to automate grading processes.
@@ -68,10 +89,10 @@
 
       <h2>Skills</h2>
       <p>
-        Programming Languages: Python, Java, C/C++, TypeScript, HTML, CSS, SQL, Scheme, Matlab
-
-        Frameworks: Docker, Node.js, Django, TensorFlow, PyTorch, OpenCV, ROS, pandas, firebase
-
+        Programming Languages: Python, Java, Scala, Kotlin, C/C++, TypeScript, HTML, CSS, SQL, Scheme, Matlab
+        <br>
+        <br>
+        Frameworks: OpenCV, ROS, Docker, Node.js, Django, TensorFlow, PyTorch, pandas, firebase
       </p>
 
     </section>
@@ -80,6 +101,21 @@
     <blockquote>
       <p>Projects</p>
     </blockquote>
+
+    <section>
+      <h2>Thesis: Program equivalence based autograder</h2>
+      <p>
+        I helped setup the autograder on 
+        <a href="https://www.gradescope.com/get_started">
+          Gradescope_Setup
+        </a>
+        for the Operating Systems class.
+        The future plan is to implement a lexical parser to help
+        speed up grading.
+      </p>
+      Here is the github:
+      <a href="https://github.com/agmui/Gradescope_Setup">https://github.com/agmui/Gradescope_Setup</a>
+    </section>
 
     <section>
       <h2>
@@ -105,40 +141,6 @@
     </section>
 
     <section>
-      <h2>Blossom research</h2>
-      Robotics research about HCI. Originally developed my CMU:(https://github.com/hrc2/blossom-public)
-      blossom is an open-source programmable animation that can interact with humans.
-      For our implementation, we added gesture recognition to be able to play any animation
-      given a specific hand gesture and a simple chatbot program using OpenAi's speech2text, gpt4, and text2speech.
-    </section>
-<!-- 
-    <section class="small-box">
-      <h2>Robomasters</h2>
-      What is <a href="https://www.youtube.com/watch?v=ECr4zgK6cPA&t=1s">RoboMasters?</a>
-
-      <ul>
-        <li>
-          pi pico dev:
-              ported old robotics codebase (taproot) to work on the raspberry pi pico. This was in an effort to cut costs compared to the Robomasters type-c
-        </li>
-        <li>
-          yolov8:
-              - Developed a real-time object detection system for RoboMasters to find and move a robot to hit fast-moving panels
-              - Implemented an end-to-end real-time inference pipeline including filtering raw image data and feeding it to the model for inference
-        </li>
-        <li>
-          game: Robomasters RMUL game simulator written in Godot
-        </li>
-        <li>
-          website:
-              - Created team front-facing website using three.js and tailwind
-              - https://robomasters-website.web.app/
-        </li>
-      </ul>
-    </section> -->
-
-
-    <section>
 
       <h2>Robomasters Embed development and CV/AI </h2>
       <p>
@@ -155,21 +157,32 @@
       </p>
 
       <p>
-        As software lead I oversee and teach three sub teams:
+        As software lead I oversee and teach three sub teams
+        <ul>
+          <li>
 
-        Controls team:
-          We mainly program on our custom board driven by the pi pico.
-          
-          Reading and controling an array of sensors on our custom board baised around the pi pico.
+            <b> Embedded team: </b>
+              We mainly program on our custom board driven by the pi pico.
+              
+              Reading and controlling an array of sensors on our custom board designed around the pi pico.
 
-        CV team:
-          the auto-aiming and automatic movement of the robots.
-          We use a Nividia Jetson Xavier and YoloV8 for our auto-aiming. We also have a robot running fully autonomous
-          with ROS integration.
+          </li>
+          <li>
 
-        Sentry team:
-          ROS
+            <b> CV team: </b>
+              the auto-aiming and automatic movement of the robots.
+              We use a Nvidia Jetson Xavier and YoloV8 for our auto-aiming. We also have a robot running fully autonomous
+              with ROS integration.
 
+          </li>
+          <li>
+
+            <b> Sentry team: </b>
+            <br>
+              Used the ROS2 and Nav2 framework to autonomously navigate the sentry on the field
+
+          </li>
+        </ul>
       </p>
       Links
       <br>
@@ -178,20 +191,6 @@
       <a href="https://github.com/agmui/sample_rm_pico_app">Robot codebase</a>
     </section>
 
-    <section>
-      <h2>AI autograder script</h2>
-      <p>
-        I helped setup the autograder on 
-        <a href="https://www.gradescope.com/get_started">
-          Gradescope_Setup
-        </a>
-        for the Operating Systems class.
-        The future plan is to implement a lexical parser and AI autograder to help
-        speed up grading.
-      </p>
-      Here is the github:
-      <a href="https://github.com/agmui/Gradescope_Setup">https://github.com/agmui/Gradescope_Setup</a>
-    </section>
     <section class="small-box">
       <p>
       <h2>Other Projects</h2>
@@ -208,8 +207,7 @@
           <ul>
             <li>custom RISC-V processor</li>
             <li>KD trees collision detection demo</li>
-            <!-- * avl trees? -->
-            <li> all of bio ai </li>
+            <li>Custom Raytracer</li>
             <li> os heapman2 </li>
             <li> scheme interpreter </li>
           </ul>
@@ -217,15 +215,14 @@
         <li>
           random stuff repo
           <ul>
-            <li>collatz Conjecture</li> 
-            <li>conways game of life</li>
+            <li>Collatz Conjecture visualizer</li> 
+            <li>Conway's game of life</li>
             <li>LM game</li> 
             <li>Langton's Ant</li> 
             <li>Snake</li> 
             <li>Boids: bird flock simulation </li>
           </ul>
         </li>
-        <li> Genetic alg framwork?  </li>
         <li> splines c++ </li>
         <li>Digital Electronics: Arduino projects and soldering</li>
       </ul>
@@ -233,8 +230,6 @@
     </section>
 
     <section class="left">
-      <!-- <h2>About me</h2> -->
-
       Thanks for visiting my website!
     </section>
 

@@ -13,12 +13,19 @@ to use:
 
 `npm run dev`  
 
-To deploy:
+#### To deploy:
 
 ```bash
 npm run build
 # copy and move everything in dist to public
 firebase deploy
+```
+
+#### To preview before deploying:
+
+```bash
+npm run build
+npm run preview
 ```
 
 
